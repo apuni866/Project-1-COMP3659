@@ -5,9 +5,7 @@
 #include "custom_string.h"
 #include "constants.h"
 #include "memory.h"
-
-
-
+#include "command.h"
 
 int main ()
 {
@@ -15,32 +13,30 @@ int main ()
   char *arguments[MAX_ARGS];         /* array of ptrs */
   ssize_t  bytes_read;
   int argument_count = 0;
-
-  char temp1[] = "hello bro";
-  char temp2[MAX_BUFR_SZ] = "this is (destin)";
-  
+  struct Command command;
   /*while ((bytes_read = read(STD_INPUT, cmd_input, (size_t)MAX_LEN) > 0) && strncmp(cmd_input,"exit",4) != 0)*/
   write(STDOUT_FILENO,"$ ",2);
-  bytes_read = read(STD_INPUT, cmd_input, (size_t)MAX_LEN);
+  bytes_read = read(STD_INPUT_FD, command.argv, (size_t)MAX_LEN);
 
-  while ((string_compare (cmd_input,"exit",4) != 0) && bytes_read < MAX_LEN) {
+  while ((string_compare (command.argv, "exit",4) != 0) && bytes_read < MAX_LEN) {
     
-    write(STDOUT_FILENO, cmd_input, (size_t)bytes_read);
-    write(STDOUT_FILENO,"$ ",2);
-    bytes_read = read(STD_INPUT, cmd_input, (size_t)MAX_LEN);
+    /*    write(STDOUT_FILENO, cmd_input, (size_t)bytes_read);
+    write(STDOUT_FILENO,">_> ",4);
+    bytes_read = read(STD_INPUT_FD, cmd_input, (size_t)MAX_LEN);
     
     argument_count = parse(cmd_input, arguments);
 
     printf("---> %d\n", argument_count);
-    //printf("%c\n", cmd_input[0]);
-    //printf("%s\n", arguments[0]);    
+    */
+    
+    get_command(&command);
   
   }
 
  
  
  
-  //**** basic test for the get_strnlen and strncat funtions ********* 
+  /**** basic test for the get_strnlen and strncat funtions ********* 
   size_t srcLen = get_strlen(temp1);
   size_t destLen = get_strlen(temp2);
   size_t space_left = (size_t)MAX_BUFR_SZ - destLen - 1; //minus 1 as you dont count the null terminator in the get_strlen funtion  
@@ -52,17 +48,16 @@ int main ()
     printf("%lu\n", destLen);
     printf("%lu\n", space_left);
 
-    strncat(temp2,temp1,srcLen);
     printf("%s\n", temp2);    
     
   }
   else{
       printf("Copying failed, not enough space\n");
     }
-  /*************************************************/  
+  ************************************************/  
 
   /**** memory allocation test (1024 bytes max) *******/
-  char *block1 = alloc(500);
+  /*  char *block1 = alloc(500);
 
   if (block1 != NULL)
     printf("B1 Allocation successful\n");
@@ -88,7 +83,7 @@ int main ()
   else
     printf("B3 Allocation error\n");
 
-  /*****************************************************/
+  ****************************************************/
 
   
   
