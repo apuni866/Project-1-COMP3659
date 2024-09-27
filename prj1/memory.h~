@@ -1,0 +1,9 @@
+#ifndef MEMORY_H
+#define MEMORY_H
+
+
+char *alloc(unsigned int size);
+void free_all();
+
+
+#endif
