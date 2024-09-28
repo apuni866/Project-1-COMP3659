@@ -16,7 +16,7 @@ prompt.o: prompt.c
 custom_string.o: custom_string.c custom_string.h
 	$(CC) $(CFLAGS) -c custom_string.c
 
-memory.o: memory.c memory.h
+memory.o: memory.c memory.h custom_string.h
 	$(CC) $(CFLAGS) -c memory.c
 
 command.o: command.c command.h

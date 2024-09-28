@@ -11,19 +11,26 @@
  int main ()
 {
   Command command;
-  
+  command.memory_error_flag = false;
  
-  while (1){
+  while (1)
+  {
 
     get_command(&command);
 
     if (string_compare(command.argv[0],"exit",4) == 0)     
       break;
+
+    if (command.memory_error_flag == true)
+    {
+      write(STDOUT_FILENO, "Failed to allocate more memory\n",31);
+      break;
+    }
+
+    free_all();
     
-   
-   }
  
- 
+  }
  
   /**** basic test for the get_strnlen and strncat funtions ********* 
   size_t srcLen = get_strlen(temp1);
