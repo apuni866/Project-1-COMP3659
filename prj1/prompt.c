@@ -7,32 +7,21 @@
 #include "memory.h"
 #include "command.h"
 
-int main ()
-{
-  char cmd_input[MAX_LEN];           // input from the command line
-  char *arguments[MAX_ARGS];         /* array of ptrs */
-  ssize_t  bytes_read;
-  int argument_count = 0;
-  struct Command command;
-  /*while ((bytes_read = read(STD_INPUT, cmd_input, (size_t)MAX_LEN) > 0) && strncmp(cmd_input,"exit",4) != 0)*/
-  write(STDOUT_FILENO,"$ ",2);
-  bytes_read = read(STD_INPUT_FD, command.argv, (size_t)MAX_LEN);
-
-  while ((string_compare (command.argv, "exit",4) != 0) && bytes_read < MAX_LEN) {
-    
-    /*    write(STDOUT_FILENO, cmd_input, (size_t)bytes_read);
-    write(STDOUT_FILENO,">_> ",4);
-    bytes_read = read(STD_INPUT_FD, cmd_input, (size_t)MAX_LEN);
-    
-    argument_count = parse(cmd_input, arguments);
-
-    printf("---> %d\n", argument_count);
-    */
-    
-    get_command(&command);
   
-  }
+ int main ()
+{
+  Command command;
+  
+ 
+  while (1){
 
+    get_command(&command);
+
+    if (string_compare(command.argv[0],"exit",4) == 0)     
+      break;
+
+   
+   }
  
  
  
