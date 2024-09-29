@@ -1,7 +1,7 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-#define MAX_BUFFER_SIZE 16     //256
+#define MAX_BUFFER_SIZE 256     //256
 #define MAX_LEN 128
 #define MAX_ARGS 64
 #define STD_INPUT_FD 0

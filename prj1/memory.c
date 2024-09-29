@@ -34,8 +34,10 @@ char *alloc(unsigned int size)
 
 void free_all()
 {
+  //printf("Location of freep before free_all() is: %p\n",(void*)freep);
   freep = heap;
-
+  //printf("Location of freep AFTER is: %p\n",(void*)freep);
+  
 }
 
 

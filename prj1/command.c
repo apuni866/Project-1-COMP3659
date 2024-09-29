@@ -14,8 +14,8 @@ void get_command(Command* command){
   char *buffer = alloc(MAX_BUFFER_SIZE);  //max_buffer_size = 256  
 
   //reset_command_struct(command);
-
-  write(STDOUT_FILENO, PROMPT_SYMBOL, PROMPT_SYMBOL_SIZE); // Write prompt to standard output
+  write(STDOUT_FILENO,"\n",1);
+  write(STDOUT_FILENO, PROMPT_SYMBOL, PROMPT_SYMBOL_SIZE); // CMD line Symbol 
 
   // Read command line
   bytesRead = read(STDIN_FILENO, buffer, MAX_BUFFER_SIZE - 1); // Leave space for null terminator
@@ -26,8 +26,10 @@ void get_command(Command* command){
     return;
   }
  
-  else if (bytesRead > MAX_BUFFER_SIZE - 1){
+  else if (bytesRead >= MAX_BUFFER_SIZE - 1){
       flush();
+      printf("flush is was called\n");
+	     
     /*printf("\n--->%d\n",bytesRead);
     char *new_buffer = resize(buffer);
     if (new_buffer == NULL){
@@ -56,8 +58,20 @@ void get_command(Command* command){
 }
 
 int run_command(Command* command){
+
+  
+
+
+
+
+
+  
   return 0;
 }
+
+/******
+ *
+ ******/
 void reset_command_struct(Command* command){
   command->argc = 0;
   command->background = false;
@@ -67,8 +81,9 @@ void reset_command_struct(Command* command){
 void flush()
 {
   char discard;
-  while (read(STDIN_FILENO, &discard, 1) > 0 && discard != '\n');
-
-
-
+  while( read(STDIN_FILENO, &discard, 1) > 0 && discard != '\n')
+    {
+      printf("Flushing ...\n");
+    }
+  
 }
