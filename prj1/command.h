@@ -10,6 +10,7 @@ typedef struct
   unsigned int argc;
   bool background;
   bool memory_error_flag;
+  bool path_error_flag;
 
 }Command;
 

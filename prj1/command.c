@@ -37,6 +37,7 @@ void get_command(Command* command){
       write(STD_FILENO, "Failed to allocate more memory\n" 31);
       return;
     }
+
     else{
       buffer = new_buffer;
       printf("\nSuccess in allocating more memory inside of command.c\n\n");
@@ -45,7 +46,7 @@ void get_command(Command* command){
     }
 
   printf("\nNormal bytes read from above line--->%d\n",bytesRead);
-  buffer[bytesRead] = '\0';                // Null terminate here as within the 'parse' func'n a null check is done for this buffer
+  buffer[bytesRead-1] = '\0';                // Null terminate here as within the 'parse' func'n a null check is done for this buffer
   write(STDOUT_FILENO, buffer, bytesRead); // Write prompt to standard output
   parse(buffer, command->argv);            /* Pass in the command->argv as 'parse' populates the argument
 					        vector with the pointer to the location of the argument string 
@@ -59,8 +60,25 @@ void get_command(Command* command){
 
 int run_command(Command* command){
 
+  int pid;
   
+  //if argv[0] is an invalid executable, it shoudlnt fork so we should validate input in get command
+  pid = fork();
+  if(pid ==0){
 
+
+    if (command->argc ==1)
+      execve(command->argv,NULL,NULL);
+    else {
+      execve(command->argv[0],command->argv, NULL);
+    }
+    
+  }
+  else{
+    wait(pid);
+    
+    
+  }
 
 
 

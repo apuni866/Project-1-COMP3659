@@ -28,7 +28,7 @@
       write(STDOUT_FILENO, "Failed to allocate more memory\n",31);
       break;
     }
-
+    run_command(&command);
     free_all();
     
  
