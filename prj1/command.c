@@ -1,6 +1,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <sys/wait.h>
 
 #include "custom_string.h"
 #include "constants.h"
@@ -60,29 +62,38 @@ void get_command(Command* command){
 
 int run_command(Command* command){
 
+  int child_status;
   int pid;
-  
-  //if argv[0] is an invalid executable, it shoudlnt fork so we should validate input in get command
+  char * const envp[] = {NULL};
+  char * const path = command->argv[0]; //direct path
+  char curr_dir_path[MAX_BUFFER_SIZE] = "./"; //current directory path.
+  strncat(curr_dir_path, path, get_strlen(path)+ 1);
+
+
+  //we'll add pipe here later / io redirect later
+ 
   pid = fork();
+  
+  if (pid == -1){
+    perror("could not fork");
+    exit(EXIT_FAIL);
+  }
+
+  
   if(pid ==0){
 
-
-    if (command->argc ==1)
-      execve(command->argv,NULL,NULL);
-    else {
-      execve(command->argv[0],command->argv, NULL);
-    }
-    
+    //attempt to open direct path and then attempt current directory.
+    // mostly just for convenient for testing later.
+    if (execve(path,command->argv,envp)== -1)
+      if (execve(curr_dir_path, command->argv, envp) ==-1){
+	perror("could not open process");
+	exit(EXIT_FAIL);
+      }
+	  
   }
   else{
-    wait(pid);
-    
-    
+    waitpid(pid, &child_status, 0); 
   }
-
-
-
-
   
   return 0;
 }

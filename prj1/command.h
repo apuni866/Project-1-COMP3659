@@ -3,7 +3,6 @@
 
 #include "constants.h"
 
-
 typedef struct
 {
   char *argv[MAX_ARGS + 1];

@@ -7,6 +7,8 @@
 #define STD_INPUT_FD 0
 #define PROMPT_SYMBOL ">_> "
 #define PROMPT_SYMBOL_SIZE 4
+#define EXIT_SUCCESS 0
+#define EXIT_FAIL 1
 
 typedef enum {
   false = 0,
