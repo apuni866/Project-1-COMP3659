@@ -66,7 +66,7 @@ int run_command(Command* command){
   int pid;
   char * const envp[] = {NULL};
   char * const path = command->argv[0]; //direct path
-  char curr_dir_path[MAX_BUFFER_SIZE] = "./"; //current directory path.
+  char curr_dir_path[MAX_BUFFER_SIZE] = "/bin/"; //current directory path.
   strncat(curr_dir_path, path, get_strlen(path)+ 1);
 
 
