@@ -14,6 +14,7 @@ char *strcpy (char *destination, const char *source);
 size_t get_strlen(const char *input_str);
 
 char *strncat(char *destination, const char *source, size_t src_byte_len);
+int contains_pipe(char* argv[]);
 
 // char *strcat(char *destination, const char *source);  
 

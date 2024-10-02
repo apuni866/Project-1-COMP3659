@@ -141,3 +141,24 @@ char *strncat(char *destination, const char *source, size_t src_byte_len)
   return destination;
   
 }
+/*Checks if an argument in argv contains the piping character "|"*/
+int contains_pipe_char(char *argv[]) {
+    for (int i = 0; argv[i] != '\0'; i++) {
+        if (strcmp(argv[i], "|") == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int contains_redirection(char *argv[]) {
+    for (int i = 0; argv[i] != NULL; i++) {
+        if (strcmp(argv[i], ">") == 0) {
+            return OUT_REDIRECT_CODE;  
+        }
+        if (strcmp(argv[i], "<") == 0) {
+            return IN_REDIRECT_CODE;  // Input redirection found
+        }
+    }
+    return 0;  // No redirection found
+}
