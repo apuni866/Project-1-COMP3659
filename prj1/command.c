@@ -47,9 +47,8 @@ void get_command(Command* command){
       }*/
     }
 
-  printf("\nNormal bytes read from above line--->%d\n",bytesRead);
+  
   buffer[bytesRead-1] = '\0';                // Null terminate here as within the 'parse' func'n a null check is done for this buffer
-  write(STDOUT_FILENO, buffer, bytesRead); // Write prompt to standard output
   parse(buffer, command->argv);            /* Pass in the command->argv as 'parse' populates the argument
 					        vector with the pointer to the location of the argument string 
 					        this means in the main (prompt.c) we can just see if command.argv[0] == "exit" */
@@ -59,6 +58,8 @@ void get_command(Command* command){
   
   return;
 }
+
+//del this just for a git test
 
 int run_command(Command* command){
 
