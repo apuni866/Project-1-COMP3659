@@ -14,14 +14,13 @@
  *******************/
 int string_compare(const char * string1, const char* string2, size_t byte_length)
 {
-
   unsigned char str1,str2;
-
+  if (string1 == '\0') return -1;
   while(byte_length-- > 0){
 
     str1 = (unsigned char) *string1++;
     str2 = (unsigned char) *string2++;
-
+    
     if (str1 != str2)
       return str1 - str2;
 
