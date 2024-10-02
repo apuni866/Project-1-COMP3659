@@ -75,7 +75,7 @@ int run_command(Command* command){
   pid = fork();
   
   if (pid == -1){
-    perror("could not fork");
+    perror("Could not fork.\n");
     exit(EXIT_FAIL);
   }
 
@@ -86,7 +86,7 @@ int run_command(Command* command){
     // mostly just for convenient for testing later.
     if (execve(path,command->argv,envp)== -1)
       if (execve(curr_dir_path, command->argv, envp) ==-1){
-	perror("could not open process");
+	perror("Could not open process.\n");
 	exit(EXIT_FAIL);
       }
 	  
