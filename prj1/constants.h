@@ -9,7 +9,6 @@
 #define PROMPT_SYMBOL_SIZE 4
 #define EXIT_SUCCESS 0
 #define EXIT_FAIL 1
-#define NULL '\0'
 #define OUT_REDIRECT_CODE 1
 #define IN_REDIRECT_CODE 2
 

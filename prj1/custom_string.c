@@ -1,5 +1,6 @@
 #include "custom_string.h"
 #include "constants.h"
+#include "command.h"
 
 
 
@@ -15,7 +16,7 @@
 int string_compare(const char * string1, const char* string2, size_t byte_length)
 {
   unsigned char str1,str2;
-  if (string1 == '\0') return -1;
+  if (string1 == NULL) return -1;
   while(byte_length-- > 0){
 
     str1 = (unsigned char) *string1++;
@@ -142,13 +143,13 @@ char *strncat(char *destination, const char *source, size_t src_byte_len)
   
 }
 /*Checks if an argument in argv contains the piping character "|"*/
-int contains_pipe_char(char *argv[]) {
-    for (int i = 0; argv[i] != '\0'; i++) {
-        if (strcmp(argv[i], "|") == 0) {
-            return 1;
+int contains_pipe_char(Command *command) {
+    for (unsigned int i = 0; i < command->argc; i++) {
+        if (string_compare(command->argv[i], "|", get_strlen(command->argv[i])) == 0) {
+            return 1;  // Pipe found
         }
     }
-    return 0;
+    return 0;  // No pipe found
 }
 /***************************************************
 * Checks if an argument in argv contains the I/O 
@@ -158,14 +159,14 @@ int contains_pipe_char(char *argv[]) {
 * Returns 2 if "<" is found
 * Returns 0 if neither is found
 *****************************************************/
-int contains_redirection(char *argv[]) {
-    for (int i = 0; argv[i] != NULL; i++) {
-        if (strcmp(argv[i], ">") == 0) {
+int contains_redirection_char(Command *command) {
+    for (unsigned int i = 0; i < command->argc; i++) {
+      
+        if (string_compare(command->argv[i], ">", get_strlen(command->argv[i])) == 0) 
             return OUT_REDIRECT_CODE;  
-        }
-        if (strcmp(argv[i], "<") == 0) {
-            return IN_REDIRECT_CODE;  // Input redirection found
-        }
+        
+        if (string_compare(command->argv[i], "<", get_strlen(command->argv[i])) == 0) 
+            return IN_REDIRECT_CODE;  
     }
     return 0;  // No redirection found
 }
