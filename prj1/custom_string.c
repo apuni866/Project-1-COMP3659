@@ -152,7 +152,14 @@ int contains_pipe_char(Command *command) {
     return 0;  // No pipe found
 }
 
-
+/***************************************************
+* Checks if an argument in argv contains the I/O 
+* redirection characters ">" or "<"
+*
+* Returns 1 is ">" is found 
+* Returns 2 if "<" is found
+* Returns 0 if neither is found
+*****************************************************/
 int contains_redirection_char(Command *command) {
     for (unsigned int i = 0; i < command->argc; i++) {
       
@@ -161,7 +168,6 @@ int contains_redirection_char(Command *command) {
         
         if (string_compare(command->argv[i], "<", get_strlen(command->argv[i])) == 0) 
             return IN_REDIRECT_CODE;  
-        
     }
     return 0;  // No redirection found
 }
