@@ -150,7 +150,14 @@ int contains_pipe_char(char *argv[]) {
     }
     return 0;
 }
-
+/***************************************************
+* Checks if an argument in argv contains the I/O 
+* redirection characters ">" or "<"
+*
+* Returns 1 is ">" is found 
+* Returns 2 if "<" is found
+* Returns 0 if neither is found
+*****************************************************/
 int contains_redirection(char *argv[]) {
     for (int i = 0; argv[i] != NULL; i++) {
         if (strcmp(argv[i], ">") == 0) {
