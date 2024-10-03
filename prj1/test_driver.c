@@ -97,23 +97,21 @@ void test_command() {
     command.memory_error_flag = false;
     printf("Testing command functions...\n");
 
-    /*Command command;*/
-
     // Test get_command
+
+    printf("\nEnter empty command\n");
+    get_command(&command);
+    print_test_result("get_command", command.argv[0] == NULL); 
+
+    printf("Enter non-empty command\n");
     get_command(&command);  // Simulate getting a command
     print_test_result("get_command", command.argv[0] != NULL);  // Assuming any input is valid
-
-    // Test run_command
+    
     int run_result = run_command(&command);
     print_test_result("run_command", run_result == 0);
 
-    // Test reset_command_struct
     reset_command_struct(&command);
     print_test_result("reset_command_struct", command.argv[0] == NULL);
-
-    // Test flush
-    flush();
-    print_test_result("flush", 1);  // Assuming flush has no visible effect
 
     prompt_continue();  // After all command tests
 }
@@ -122,15 +120,12 @@ void test_command() {
 void test_memory() {
     printf("Testing memory functions...\n");
 
-    // Test alloc
     char *buffer = alloc(MAX_BUFFER_SIZE);
     print_test_result("alloc", buffer != NULL);
 
-    // Test resize
     buffer = resize(buffer);
     print_test_result("resize", buffer != NULL);
 
-    // Test free_all
     free_all();
     print_test_result("free_all", 1);  // Assume free_all works without error
 
@@ -141,8 +136,7 @@ int main() {
 
     test_custom_string();
 
-    /*test_command();*/
-    //currently causes seg fault
+    test_command();
 
     test_memory();
 
