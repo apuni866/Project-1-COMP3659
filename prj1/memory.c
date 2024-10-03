@@ -8,8 +8,6 @@
 char heap[HEAP_SIZE];
 char *freep = heap;
 
-
-
 /******
  *
  *
@@ -39,8 +37,6 @@ void free_all()
   //printf("Location of freep AFTER is: %p\n",(void*)freep);
   
 }
-
-
 char *resize(char *old_buffer)
 {
   int i;
