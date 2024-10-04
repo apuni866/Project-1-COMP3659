@@ -63,16 +63,15 @@ int parse (char *input_buffer, char *args[])
       *input_buffer++;
 
 
-    //repace whitespace with a null or slash (will be helpfull later when dealing with the bin/ ...)
+    //repace whitespace with a null or slash
     if (*input_buffer == ' '){
 
-      //*input_buffer = '\0';
       *input_buffer = '\0';
       *input_buffer++;
 
       }
   }
-  // nake note of this null 
+  // this or '/0'
   args[counter] = NULL; //null terminate this for execve(x,y,NULL) as it is a requirement (says in the manual 2 execve)
 
   return counter;
@@ -144,12 +143,13 @@ char *strncat(char *destination, const char *source, size_t src_byte_len)
 }
 /*Checks if an argument in argv contains the piping character "|"*/
 int contains_pipe_char(Command *command) {
-    for (unsigned int i = 0; i < command->argc; i++) {
+    unsigned int i;
+    for (i = 0; i < command->argc; i++) {
         if (string_compare(command->argv[i], "|", get_strlen(command->argv[i])) == 0) {
-            return 1;  // Pipe found
+            return i;  // Pipe found (before: return 1) 
         }
     }
-    return 0;  // No pipe found
+    return -1;  // No pipe found
 }
 /***************************************************
 * Checks if an argument in argv contains the I/O 
@@ -159,7 +159,7 @@ int contains_pipe_char(Command *command) {
 * Returns 2 if "<" is found
 * Returns 0 if neither is found
 *****************************************************/
-int contains_redirection_char(Command *command) {
+int contains_redirection_char(Command *command) { //what if we return index instead..?
     for (unsigned int i = 0; i < command->argc; i++) {
       
         if (string_compare(command->argv[i], ">", get_strlen(command->argv[i])) == 0) 

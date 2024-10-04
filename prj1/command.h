@@ -7,10 +7,11 @@ typedef struct
 {
   char *argv[MAX_ARGS + 1];
   unsigned int argc;
-  bool background;
   bool memory_error_flag;
   bool path_error_flag;
-
+  bool background;
+  //char history[]
+  
 }Command;
 
 extern Command command;

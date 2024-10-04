@@ -6,11 +6,6 @@
 #include "constants.h"
 #include "memory.h"
 #include "command.h"
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 653a168292677baedf66f9d0691c0a63f02bd355
   
 int main ()
 {
@@ -23,6 +18,12 @@ int main ()
 
     if (string_compare(command.argv[0],"exit",4) == 0)    
       break;
+
+    // clear command works 
+    if (string_compare(command.argv[0],"clear",5) == 0){
+      write(STDOUT_FILENO, "\033[H\033[J",7);
+      get_command(&command);
+    }
     
     if (string_compare(command.argv[0],"exit",4) == -1)
       continue;    
@@ -33,15 +34,13 @@ int main ()
       break;
     }
 
+    //printf("\nThese are the commands -%s --%s ---%s\n",command.argv[0], command.argv[1], command.argv[2]);
     run_command(&command);
     free_all();
  
   }
-<<<<<<< HEAD
 
 
-=======
->>>>>>> 653a168292677baedf66f9d0691c0a63f02bd355
   return 0;
 }
 

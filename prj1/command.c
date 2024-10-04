@@ -31,20 +31,8 @@ void get_command(Command* command){
       printf("flush is was called\n"); 
     }
 
-<<<<<<< HEAD
-    else{
-      buffer = new_buffer;
-      printf("\nSuccess in allocating more memory inside of command.c\n\n");
-      printf("sizeof new buffer%lu\n",sizeof(new_buffer));
-      }*/
-    }
-
-  
-  buffer[bytesRead-1] = '\0';                // Null terminate here as within the 'parse' func'n a null check is done for this buffer
-=======
   buffer[bytesRead-1] = '\0';                // Null terminate here as within the 'parse' func'n a null check is done for this buffer
 
->>>>>>> 653a168292677baedf66f9d0691c0a63f02bd355
   parse(buffer, command->argv);            /* Pass in the command->argv as 'parse' populates the argument
 					        vector with the pointer to the location of the argument string 
 					        this means in the main (prompt.c) we can just see if command.argv[0] == "exit" */
@@ -54,20 +42,20 @@ void get_command(Command* command){
   return;
 }
 
-//del this just for a git test
 
 int run_command(Command* command){
 
   int child_status;
   int pid;
-  char * const envp[] = {NULL};
+  //char * const envp[] = {NULL};
+  char * envp[] = {(char *)"PATH=/bin",0};
   char * const path = command->argv[0]; //direct path
   char curr_dir_path[MAX_BUFFER_SIZE] = "/bin/"; //current directory path.
   strncat(curr_dir_path, path, get_strlen(path)+ 1);
 
 
   //we'll add pipe here later / io redirect later
- 
+  
   pid = fork();
   
   if (pid == -1){
@@ -82,7 +70,7 @@ int run_command(Command* command){
     // mostly just for convenient for testing later.
     if (execve(path,command->argv,envp)== -1)
       if (execve(curr_dir_path, command->argv, envp) ==-1){
-	      perror("could not open process");
+	      perror("Could not open process");
 	      exit(EXIT_FAIL);
       }
 	  
@@ -94,9 +82,7 @@ int run_command(Command* command){
   return 0;
 }
 
-/******
- *
- ******/
+/***/
 void reset_command_struct(Command* command){
   command->argc = 0;
   command->background = false;
@@ -112,3 +98,13 @@ void flush()
     }
   
 }
+
+/*-----
+int handle_IO_redirection()
+{
+
+
+
+
+
+}*/

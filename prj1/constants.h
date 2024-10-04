@@ -16,10 +16,6 @@ typedef enum {
   false = 0,
   true = 1
 } bool;
-/*
-typedef unsigned char UCHAR;
-typedef unsigned int UINT;
-typedef unsigned long ULONG;
-*/
+
 
 #endif
