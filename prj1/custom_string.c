@@ -43,9 +43,12 @@ int string_compare(const char * string1, const char* string2, size_t byte_length
  *
  *
  ***********************************/
-int parse (char *input_buffer, char *args[])
+int parse (char *input_buffer, Command* command)
 {
   int counter = 0;
+  char **args; 
+  args = command->argv;
+
 
   //ignore white space
   while(*input_buffer == ' ')
@@ -63,7 +66,7 @@ int parse (char *input_buffer, char *args[])
       *input_buffer++;
 
 
-    //repace whitespace with a null or slash
+    //repace whitespace with a null
     if (*input_buffer == ' '){
 
       *input_buffer = '\0';
@@ -73,6 +76,8 @@ int parse (char *input_buffer, char *args[])
   }
   // this or '/0'
   args[counter] = NULL; //null terminate this for execve(x,y,NULL) as it is a requirement (says in the manual 2 execve)
+
+  command->argc = counter;
 
   return counter;
 
