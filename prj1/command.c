@@ -36,9 +36,15 @@ void get_command(Command* command){
   parse(buffer, command->argv);            /* Pass in the command->argv as 'parse' populates the argument
 					        vector with the pointer to the location of the argument string 
 					        this means in the main (prompt.c) we can just see if command.argv[0] == "exit" */
+  
+  
+  int index = contains_pipe_char(command);
+
   reset_command_struct(command);
   
   
+
+
   return;
 }
 
