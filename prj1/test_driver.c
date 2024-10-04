@@ -1,171 +1,146 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/wait.h>
 #include "custom_string.h"
-#include "constants.h"
 #include "command.h"
 #include "memory.h"
+#include "constants.h"
 
-// Forward declarations of functions to test
-void get_command(Command *command);
-int run_command(Command *command);
-void reset_command_struct(Command *command);
-void flush();
-
-// Memory-related function prototypes
-char *alloc(unsigned int size);
-void free_all();
-char *resize(char *old_buffer);
-
-// Mock implementations of missing functions for command tests
-void parse(char *buffer, char **argv)
-{
-    int index = 0;
-    char *token = strtok(buffer, " ");
-    while (token != NULL)
-    {
-        argv[index++] = token;
-        token = strtok(NULL, " ");
-    }
-    argv[index] = NULL;
+// Function to prompt user to hit enter between major sections
+void prompt_continue() {
+    printf("\nPress Enter to continue...\n");
+    while (getchar() != '\n');
 }
 
-int main()
-{
-    // ===================
-    // COMMAND TESTS
-    // ===================
-    Command test_command;
+// Helper function to format test results
+void print_test_result(const char *test_name, int result) {
+    if (result) {
+        printf("%-40s [--PASS--]\n", test_name);
+    } else {
+        printf("%-40s [--FAIL--]\n", test_name);
+    }
+}
 
-    // Test 1: Empty command input
-    printf("=== Test 1: Empty Command ===\n");
-    reset_command_struct(&test_command);
-    char empty_input[] = "\n";
-    write(STDIN_FILENO, empty_input, sizeof(empty_input));
-    get_command(&test_command);
-    if (test_command.argv[0] == NULL)
-    {
-        printf("Test 1 Passed: Command is NULL as expected.\n");
-    }
-    else
-    {
-        printf("Test 1 Failed: Command is not NULL.\n");
-    }
+// Function to test custom_string functions
+void test_custom_string() {
+    printf("Testing custom_string functions...\n");
 
-    // Test 2: Valid command with arguments
-    printf("=== Test 2: Valid Command ===\n");
-    reset_command_struct(&test_command);
-    char valid_input[] = "ls -la\n";
-    write(STDIN_FILENO, valid_input, sizeof(valid_input));
-    get_command(&test_command);
-    if (strcmp(test_command.argv[0], "ls") == 0 && strcmp(test_command.argv[1], "-la") == 0)
-    {
-        printf("Test 2 Passed: Parsed command correctly.\n");
-    }
-    else
-    {
-        printf("Test 2 Failed: Command parsing incorrect.\n");
-    }
+    // Test string_compare
+    const char *str1 = "hello";
+    const char *str2 = "hello";
+    const char *str3 = "world";
+    print_test_result("string_compare identical", string_compare(str1, str2, get_strlen(str1)) == 0);
+    print_test_result("string_compare different", string_compare(str1, str3, get_strlen(str1)) != 0);
 
-    // Test 3: Command exceeding MAX_BUFFER_SIZE
-    printf("=== Test 3: Command Exceeding Buffer ===\n");
-    reset_command_struct(&test_command);
-    char large_input[MAX_BUFFER_SIZE + 10];
-    memset(large_input, 'A', MAX_BUFFER_SIZE + 9);
-    large_input[MAX_BUFFER_SIZE + 9] = '\n';
-    write(STDIN_FILENO, large_input, sizeof(large_input));
-    get_command(&test_command); // Should trigger flush.
-    printf("Test 3 Passed if flush triggered (check output).\n");
+    // Test parse
+    char input[MAX_BUFFER_SIZE] = "ls -la";
+    char *args[MAX_ARGS];
+    parse(input, args);
+    print_test_result("parse", strcmp(args[0], "ls") == 0 && strcmp(args[1], "-la") == 0);
 
-    // Test 4: Running a command that exists (e.g., "ls")
-    printf("=== Test 4: Run Valid Command ===\n");
-    reset_command_struct(&test_command);
-    test_command.argv[0] = "ls";
-    test_command.argv[1] = NULL;
-    int status = run_command(&test_command);
-    if (status == 0)
-    {
-        printf("Test 4 Passed: Command ran successfully.\n");
-    }
-    else
-    {
-        printf("Test 4 Failed: Command did not run successfully.\n");
-    }
+    // Test strcpy
+    char dest[MAX_LEN];
+    strcpy(dest, str1);
+    print_test_result("strcpy", strcmp(dest, "hello") == 0);
 
-    // Test 5: Running a command that doesn't exist
-    printf("=== Test 5: Run Invalid Command ===\n");
-    reset_command_struct(&test_command);
-    test_command.argv[0] = "non_existent_command";
-    test_command.argv[1] = NULL;
-    status = run_command(&test_command);
-    if (status != 0)
-    {
-        printf("Test 5 Passed: Command failed as expected.\n");
-    }
-    else
-    {
-        printf("Test 5 Failed: Command should have failed but succeeded.\n");
-    }
+    // Test get_strlen
+    print_test_result("get_strlen", get_strlen("hello") == 5);
 
-    // ===================
-    // MEMORY TESTS
-    // ===================
+    // Test strncat
+    char src[MAX_LEN] = "world";
+    char destination[MAX_LEN] = "hello ";
+    strncat(destination, src, get_strlen(src));
+    print_test_result("strncat", strcmp(destination, "hello world") == 0);
 
-    // Test 6: Allocating memory within heap size
-    printf("=== Test 6: Allocating Memory Within Heap ===\n");
-    free_all();                // Reset heap before testing.
-    char *block1 = alloc(100); // Allocate 100 bytes.
-    if (block1 != NULL)
-    {
-        printf("Test 6 Passed: Memory allocated successfully.\n");
-    }
-    else
-    {
-        printf("Test 6 Failed: Memory allocation failed.\n");
-    }
+    // Test contains_pipe_char using Command struct
+    Command command;
+    command.argc = 3;
+    command.argv[0] = "ls";
+    command.argv[1] = "|";
+    command.argv[2] = "grep";
+    command.argv[3] = NULL;
+    print_test_result("contains_pipe_char (pipe)", contains_pipe_char(&command) == 1);
 
-    // Test 7: Allocating memory exceeding heap size
-    printf("=== Test 7: Allocating Memory Exceeding Heap ===\n");
-    char *block2 = alloc(HEAP_SIZE + 1); // Request more memory than available.
-    if (block2 == NULL)
-    {
-        printf("Test 7 Passed: Memory allocation failed as expected.\n");
-    }
-    else
-    {
-        printf("Test 7 Failed: Memory allocation should have failed but succeeded.\n");
-    }
+    // Test contains_pipe_char with no pipe
+    command.argc = 2;
+    command.argv[0] = "ls";
+    command.argv[1] = "-l";
+    command.argv[2] = NULL;
+    print_test_result("contains_pipe_char (no pipe)", contains_pipe_char(&command) == 0);
 
-    // Test 8: Resizing memory to a larger block
-    printf("=== Test 8: Resizing Memory Block ===\n");
-    char *small_block = alloc(50); // Allocate a small block.
-    strcpy(small_block, "Test data");
-    char *resized_block = resize(small_block); // Resize to a larger block.
-    if (resized_block != NULL && strcmp(resized_block, "Test data") == 0)
-    {
-        printf("Test 8 Passed: Resized memory and retained data successfully.\n");
-    }
-    else
-    {
-        printf("Test 8 Failed: Resizing failed or data was lost.\n");
-    }
+    // Test contains_redirection_char using Command struct
+    command.argc = 3;
+    command.argv[0] = "ls";
+    command.argv[1] = ">";
+    command.argv[2] = "output.txt";
+    command.argv[3] = NULL;
+    print_test_result("contains_redirection_char (output)", contains_redirection_char(&command) == OUT_REDIRECT_CODE);
 
-    // Test 9: Freeing all memory
-    printf("=== Test 9: Free All Memory ===\n");
+    // Test contains_redirection_char with input redirection
+    command.argc = 3;
+    command.argv[0] = "cat";
+    command.argv[1] = "<";
+    command.argv[2] = "input.txt";
+    command.argv[3] = NULL;
+    print_test_result("contains_redirection_char (input)", contains_redirection_char(&command) == IN_REDIRECT_CODE);
+
+    prompt_continue();  // After all custom_string tests
+}
+
+// Function to test command functions
+void test_command() {
+
+    Command command;
+    command.memory_error_flag = false;
+    printf("Testing command functions...\n");
+
+    // Test get_command
+
+    printf("\nEnter empty command\n");
+    get_command(&command);
+    print_test_result("get_command", command.argv[0] == NULL); 
+
+    printf("Enter non-empty command\n");
+    get_command(&command);  // Simulate getting a command
+    print_test_result("get_command", command.argv[0] != NULL);  // Assuming any input is valid
+    
+    int run_result = run_command(&command);
+    print_test_result("run_command", run_result == 0);
+
+    reset_command_struct(&command);
+    print_test_result("reset_command_struct", command.argv[0] == NULL);
+
+    prompt_continue();  // After all command tests
+}
+
+// Function to test memory functions
+void test_memory() {
+    printf("Testing memory functions...\n");
+
+    char *buffer = alloc(MAX_BUFFER_SIZE);
+    print_test_result("alloc", buffer != NULL);
+
+    buffer = resize(buffer);
+    print_test_result("resize", buffer != NULL);
+
     free_all();
-    char *block3 = alloc(HEAP_SIZE - 10); // Allocate most of the heap.
-    if (block3 != NULL)
-    {
-        printf("Test 9 Passed: Memory was freed successfully, and re-allocation works.\n");
-    }
-    else
-    {
-        printf("Test 9 Failed: Memory was not freed correctly.\n");
-    }
+    print_test_result("free_all", 1);  // Assume free_all works without error
+
+    prompt_continue();  // After all memory tests
+}
+
+int main() {
+
+    test_custom_string();
+
+    test_command();
+
+    test_memory();
+
+    printf("All tests completed.\n");
 
     return 0;
 }

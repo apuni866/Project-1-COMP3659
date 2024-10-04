@@ -1,5 +1,6 @@
 #include "custom_string.h"
 #include "constants.h"
+#include "command.h"
 
 
 
@@ -14,14 +15,13 @@
  *******************/
 int string_compare(const char * string1, const char* string2, size_t byte_length)
 {
-
   unsigned char str1,str2;
-
+  if (string1 == NULL) return -1;
   while(byte_length-- > 0){
 
     str1 = (unsigned char) *string1++;
     str2 = (unsigned char) *string2++;
-
+    
     if (str1 != str2)
       return str1 - str2;
 
@@ -141,4 +141,32 @@ char *strncat(char *destination, const char *source, size_t src_byte_len)
 
   return destination;
   
+}
+/*Checks if an argument in argv contains the piping character "|"*/
+int contains_pipe_char(Command *command) {
+    for (unsigned int i = 0; i < command->argc; i++) {
+        if (string_compare(command->argv[i], "|", get_strlen(command->argv[i])) == 0) {
+            return 1;  // Pipe found
+        }
+    }
+    return 0;  // No pipe found
+}
+/***************************************************
+* Checks if an argument in argv contains the I/O 
+* redirection characters ">" or "<"
+*
+* Returns 1 is ">" is found 
+* Returns 2 if "<" is found
+* Returns 0 if neither is found
+*****************************************************/
+int contains_redirection_char(Command *command) {
+    for (unsigned int i = 0; i < command->argc; i++) {
+      
+        if (string_compare(command->argv[i], ">", get_strlen(command->argv[i])) == 0) 
+            return OUT_REDIRECT_CODE;  
+        
+        if (string_compare(command->argv[i], "<", get_strlen(command->argv[i])) == 0) 
+            return IN_REDIRECT_CODE;  
+    }
+    return 0;  // No redirection found
 }

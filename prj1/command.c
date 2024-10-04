@@ -15,8 +15,6 @@ void get_command(Command* command){
   int index = 0;
   char *buffer = alloc(MAX_BUFFER_SIZE);  //max_buffer_size = 256  
 
-  //reset_command_struct(command);
-  write(STDOUT_FILENO,"\n",1);
   write(STDOUT_FILENO, PROMPT_SYMBOL, PROMPT_SYMBOL_SIZE); // CMD line Symbol 
 
   // Read command line
@@ -30,16 +28,10 @@ void get_command(Command* command){
  
   else if (bytesRead >= MAX_BUFFER_SIZE - 1){
       flush();
-      printf("flush is was called\n");
-	     
-    /*printf("\n--->%d\n",bytesRead);
-    char *new_buffer = resize(buffer);
-    if (new_buffer == NULL){
-     command->memory_error_flag = true;
-      write(STD_FILENO, "Failed to allocate more memory\n" 31);
-      return;
+      printf("flush is was called\n"); 
     }
 
+<<<<<<< HEAD
     else{
       buffer = new_buffer;
       printf("\nSuccess in allocating more memory inside of command.c\n\n");
@@ -49,10 +41,13 @@ void get_command(Command* command){
 
   
   buffer[bytesRead-1] = '\0';                // Null terminate here as within the 'parse' func'n a null check is done for this buffer
+=======
+  buffer[bytesRead-1] = '\0';                // Null terminate here as within the 'parse' func'n a null check is done for this buffer
+
+>>>>>>> 653a168292677baedf66f9d0691c0a63f02bd355
   parse(buffer, command->argv);            /* Pass in the command->argv as 'parse' populates the argument
 					        vector with the pointer to the location of the argument string 
 					        this means in the main (prompt.c) we can just see if command.argv[0] == "exit" */
-
   reset_command_struct(command);
   
   
@@ -87,8 +82,8 @@ int run_command(Command* command){
     // mostly just for convenient for testing later.
     if (execve(path,command->argv,envp)== -1)
       if (execve(curr_dir_path, command->argv, envp) ==-1){
-	perror("Could not open process.\n");
-	exit(EXIT_FAIL);
+	      perror("could not open process");
+	      exit(EXIT_FAIL);
       }
 	  
   }
