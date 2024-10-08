@@ -36,8 +36,7 @@ void get_command(Command* command){
   parse(buffer, command->argv);            /* Pass in the command->argv as 'parse' populates the argument
 					        vector with the pointer to the location of the argument string 
 					        this means in the main (prompt.c) we can just see if command.argv[0] == "exit" */
-  reset_command_struct(command);
-  
+  /*reset_command_struct(command);*/
   
   return;
 }
@@ -86,6 +85,7 @@ int run_command(Command* command){
 void reset_command_struct(Command* command){
   command->argc = 0;
   command->background = false;
+  command->argv[0] = NULL;
   //free_all();
 }
 
@@ -96,5 +96,4 @@ void flush()
     {
       printf("Flushing ...\n");
     }
-  
 }

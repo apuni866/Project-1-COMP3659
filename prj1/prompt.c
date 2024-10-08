@@ -29,6 +29,7 @@ int main ()
     }
 
     run_command(&command);
+    reset_command_struct(&command);
     free_all();
  
   }
