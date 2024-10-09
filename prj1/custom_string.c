@@ -151,7 +151,6 @@ int contains_pipe_char(Command *command) {
     }
     return 0;  // No pipe found
 }
-
 /***************************************************
 * Checks if an argument in argv contains the I/O 
 * redirection characters ">" or "<"

@@ -56,7 +56,7 @@ int run_command(Command* command){
   pid = fork();
   
   if (pid == -1){
-    perror("could not fork");
+    perror("Could not fork.\n");
     exit(EXIT_FAIL);
   }
 
