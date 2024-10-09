@@ -11,6 +11,12 @@
 #define EXIT_FAIL 1
 #define OUT_REDIRECT_CODE 1
 #define IN_REDIRECT_CODE 2
+#define PIPE '|'
+#define IO_IN '<'
+#define IO_OUT '>'
+#define BACKGROUND '&'
+#define REGULAR_TOKEN 1
+#define SPECIAL_TOKEN 2
 
 
 typedef enum {

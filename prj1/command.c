@@ -39,9 +39,9 @@ void get_command(Command* command){
 					        vector with the pointer to the location of the argument string 
 					        this means in the main (prompt.c) we can just see if command.argv[0] == "exit" */
   
+  printf("calling tokenizer\n");
   tokenizer(buffer, command);   
-  
-  printf("These are the tokens: %s, %s, %s",command->tokens[0],command->tokens[1],command->tokens[2]);
+ 
   
   return;
 }
@@ -87,7 +87,6 @@ int run_command(Command* command)
     //attempt to open direct path and then attempt current directory.
     // mostly just for convenient for testing later.
     //if (execve(path,command->argv,envp)== -1)
-    
       if (execve(curr_dir_path, command->argv, envp) ==-1){  //this works by itself no need for upper if block
 	      perror("Could not open process");
 	      exit(EXIT_FAIL);
