@@ -38,13 +38,14 @@ void get_command(Command* command){
 					        this means in the main (prompt.c) we can just see if command.argv[0] == "exit" */
   
   parse(buffer, command);   
-  reset_command_struct(command);
+ 
   
   return;
 }
 
 
-int run_command(Command* command){
+int run_command(Command* command)
+{
 
   int child_status;
   int pid;
@@ -65,7 +66,20 @@ int run_command(Command* command){
   }
 
   
-  if(pid ==0){
+  if(pid ==0)
+  {
+
+    //  if (input_fd != STDIN_FILENO)
+    // {
+    //   dup2(input_fd, STDIN_FILENO);
+    //   close(input_fd);
+    // }
+    // if (output_fd != STDOUT_FILENO)
+    // {
+    //   dup2(output_fd, STDOUT_FILENO);
+    //   close(output_fd);
+    // }
+
 
     //attempt to open direct path and then attempt current directory.
     // mostly just for convenient for testing later.
@@ -83,29 +97,27 @@ int run_command(Command* command){
   return 0;
 }
 
-/***/
-void reset_command_struct(Command* command){
+
+void reset_command_struct(Command* command)
+{
   command->argc = 0;
   command->background = false;
+  command->argv[0] = NULL;
   //free_all();
 }
 
 void flush()
 {
   char discard;
+  
+  printf("Flushing ...\n");
+  
   while( read(STDIN_FILENO, &discard, 1) > 0 && discard != '\n')
-    {
-      printf("Flushing ...\n");
-    }
+    ;
   
 }
 
 /*-----
 int handle_IO_redirection()
 {
-
-
-
-
-
 }*/

@@ -6,16 +6,18 @@
 #include "constants.h"
 #include "memory.h"
 #include "command.h"
+#include "job.h"
   
 int main ()
 {
   Command command;
+  Job job;
   command.memory_error_flag = false;
  
   while (true)
   {
     get_command(&command);
-
+   
     if (string_compare(command.argv[0],"exit",4) == 0)    
       break;
 
@@ -34,8 +36,11 @@ int main ()
       break;
     }
 
-    //printf("\nThese are the commands -%s --%s ---%s\n",command.argv[0], command.argv[1], command.argv[2]);
+    run_job(&job,&command);
+    printf("The number of pipes are: %d",job.num_stages);
+
     run_command(&command);
+    reset_command_struct(&command);
     free_all();
  
   }

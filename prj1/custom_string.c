@@ -149,12 +149,13 @@ char *strncat(char *destination, const char *source, size_t src_byte_len)
 /*Checks if an argument in argv contains the piping character "|"*/
 int contains_pipe_char(Command *command) {
     unsigned int i;
+    int pipe_count = 0;
     for (i = 0; i < command->argc; i++) {
         if (string_compare(command->argv[i], "|", get_strlen(command->argv[i])) == 0) {
-            return i;  // Pipe found (before: return 1) 
+            pipe_count ++;  // Pipe found (before: return 1) 
         }
     }
-    return -1;  // No pipe found
+    return pipe_count;  
 }
 /***************************************************
 * Checks if an argument in argv contains the I/O 
