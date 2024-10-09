@@ -37,9 +37,9 @@ int main ()
     }
 
     run_job(&job,&command);
-    printf("The number of pipes are: %d",job.num_stages);
+    
 
-    run_command(&command);
+    //run_command(&command);
     reset_command_struct(&command);
     free_all();
  

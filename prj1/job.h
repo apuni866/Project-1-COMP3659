@@ -3,7 +3,8 @@
 
 #include "command.h"
 
-/* ls -al /library | wc -l > output.txt & */
+/* ls -al /library | wc -l > output.txt & 
+*/
 // example of a job for the sake of understanding
 // it has 2 commands 
 // first command store in job.pipline[0]

@@ -12,6 +12,7 @@
 #define OUT_REDIRECT_CODE 1
 #define IN_REDIRECT_CODE 2
 
+
 typedef enum {
   false = 0,
   true = 1

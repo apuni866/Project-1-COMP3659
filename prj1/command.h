@@ -11,6 +11,7 @@ typedef struct
   bool path_error_flag;
   bool background;
   //char history[]
+  char *tokens[MAX_ARGS + 1];  
   
 }Command;
 

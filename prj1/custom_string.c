@@ -4,6 +4,7 @@
 
 
 
+
 /************************
  * This is a basic 'strncmp' funtion which
  *  compares if two string are equal. Very
@@ -31,57 +32,6 @@ int string_compare(const char * string1, const char* string2, size_t byte_length
   return 0;
 }
 
-/************************************
- * This routine return the number of arguments present
- *    within the cmd line.
- *
- *  Ex. $ do something
- *
- *    This returns '2' (treats 'do' as 1 and 'something' as 1)
- *
- *
- *
- *
- ***********************************/
-int parse (char *input_buffer, Command* command)
-{
-  int counter = 0;
-  char **args; 
-  args = command->argv;
-
-
-  //ignore white space
-  while(*input_buffer == ' ')
-  input_buffer++;
-
-
-  //this main loop fills the argument array with the arguments found from the input buffer
-  while(*input_buffer != '\0' && counter < MAX_ARGS){ // -1 ??
-
-    args[counter] = input_buffer;
-    counter++;
-
-    //move ptr along
-    while(*input_buffer != ' ' && *input_buffer != '\0')
-      *input_buffer++;
-
-
-    //repace whitespace with a null
-    if (*input_buffer == ' '){
-
-      *input_buffer = '\0';
-      *input_buffer++;
-
-      }
-  }
-  // this or '/0'
-  args[counter] = NULL; //null terminate this for execve(x,y,NULL) as it is a requirement (says in the manual 2 execve)
-
-  command->argc = counter;
-
-  return counter;
-
-}
 
 /*********
  *  This is a bsaic string copy funtion which copies 
@@ -152,7 +102,7 @@ int contains_pipe_char(Command *command) {
     int pipe_count = 0;
     for (i = 0; i < command->argc; i++) {
         if (string_compare(command->argv[i], "|", get_strlen(command->argv[i])) == 0) {
-            pipe_count ++;  // Pipe found (before: return 1) 
+            pipe_count++;  // Pipe found (before: return 1) 
         }
     }
     return pipe_count;  
