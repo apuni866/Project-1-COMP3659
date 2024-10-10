@@ -47,7 +47,7 @@ void get_command(Command* command){
 }
 
 
-int run_command(Command* command)
+int run_command(Command* command, int input_fd, int output_fd)
 {
 
   int child_status;
@@ -82,6 +82,18 @@ int run_command(Command* command)
     //   dup2(output_fd, STDOUT_FILENO);
     //   close(output_fd);
     // }
+
+    if (output_fd != STDOUT_FILENO)
+    {
+      if (dup2(command->output_fd, STDOUT_FILENO) == -1)
+      {
+        perror("Failed to redirect stdout.\n");
+        close(command->output_fd);
+        return 0;
+      }
+    }
+    close(command->output_fd);
+
 
 
     //attempt to open direct path and then attempt current directory.

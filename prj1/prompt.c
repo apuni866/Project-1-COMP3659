@@ -14,6 +14,12 @@ int main ()
   Command command;
   Job job;
   command.memory_error_flag = false;
+  command.input_fd = -1;
+  command.output_fd = -1;
+  job.infile_path = NULL;
+  job.outfile_path = NULL;
+  
+
  
   while (true)
   {
@@ -49,16 +55,5 @@ int main ()
   return 0;
 }
 
-
-//one child ..?
-/*
-int spawn_child_process()
-{
-
-  
-  return 0; 
-
-}
-*/
 
 

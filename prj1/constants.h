@@ -17,7 +17,7 @@
 #define BACKGROUND '&'
 #define REGULAR_TOKEN 1
 #define SPECIAL_TOKEN 2
-
+#define FILE_FLAG 0644
 
 typedef enum {
   false = 0,

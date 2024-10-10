@@ -90,11 +90,13 @@ void handle_special_token(Command* command, Job* job, int *i)
 
     case IO_IN: 
     job->infile_path = tokens[++(*i)];
+    //job->pipeline[job->num_stages] = *command;
     (*i)++;
     break;
 
     case IO_OUT:
     job->outfile_path = tokens[++(*i)];          //skip to the file name from the special_char
+    //job->pipeline[job->num_stages] = *command;
     (*i)++;                                       //skip file name as we dont want it in the argv
     break;
 
