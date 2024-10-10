@@ -33,11 +33,11 @@ void run_job(Job * job, Command* command)
     
 
     //loop for the pipes
-    for (int i = 0; i < job->num_stages; i++){
-       ;
+    // for (int i = 0; i < job->num_stages; i++){
+    //    ;
 
-    }
-    
+    // }
+    printf("before the outfile check in job.c \n");
     if (job->outfile_path != NULL)
     {
         printf("There was a command with '>' in the terminal\n");

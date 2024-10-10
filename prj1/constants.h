@@ -19,6 +19,8 @@
 #define SPECIAL_TOKEN 2
 #define FILE_FLAG 0644
 
+#define INIT_VALUE -1
+
 typedef enum {
   false = 0,
   true = 1

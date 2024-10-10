@@ -83,7 +83,7 @@ int run_command(Command* command, int input_fd, int output_fd)
     //   close(output_fd);
     // }
 
-    if (output_fd != STDOUT_FILENO)
+    if (output_fd != INIT_VALUE)
     {
       if (dup2(command->output_fd, STDOUT_FILENO) == -1)
       {
@@ -91,8 +91,10 @@ int run_command(Command* command, int input_fd, int output_fd)
         close(command->output_fd);
         return 0;
       }
+      close(command->output_fd);
+      //reset the value here for output_fd back to original?
+
     }
-    close(command->output_fd);
 
 
 

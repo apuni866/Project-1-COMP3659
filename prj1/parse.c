@@ -55,12 +55,12 @@ int parse(Command *command, Job *job)
   if (tokens == NULL) 
     return -1;
 
-  while(tokens[i] != NULL ) {
-
+  while(tokens[i] != NULL) {
+    printf("Under the tokens[i] != NULL cond'n \n");
     while(check_token(tokens, i) == REGULAR_TOKEN) {
       command->argv[i] = tokens[i];
       //printf("*tokens[i] = (%c),\n",*tokens[i]);
-      //printf("tokens[i] = (%s),\n",tokens[i]);
+      printf("tokens[i] = (%s),\n",tokens[i]);
       
       command->argc++;
       //printf("under argc\n");
@@ -68,9 +68,10 @@ int parse(Command *command, Job *job)
     }
     //printf("henadle spec toekn bforew\n");
     handle_special_token(command, job, &i);
+    printf("Under the handle specl token call inside parse\n");
   }
 
-  //printf("leaving parse\n");
+  printf("leaving parse\n");
   return 0;
 }
 void handle_special_token(Command* command, Job* job, int *i) 
@@ -89,15 +90,16 @@ void handle_special_token(Command* command, Job* job, int *i)
     break;
 
     case IO_IN: 
-    job->infile_path = tokens[++(*i)];
+    //job->infile_path = tokens[++(*i)];
     //job->pipeline[job->num_stages] = *command;
     (*i)++;
     break;
 
     case IO_OUT:
-    job->outfile_path = tokens[++(*i)];          //skip to the file name from the special_char
+    //job->outfile_path = tokens[++(*i)];          //skip to the file name from the special_char
     //job->pipeline[job->num_stages] = *command;
-    (*i)++;                                       //skip file name as we dont want it in the argv
+    handle_IO_output(job,command,i);
+    //(*i)++;                                       //skip file name as we dont want it in the argv
     break;
 
     case BACKGROUND:
@@ -124,5 +126,25 @@ void handle_pipeline(Job *job, Command *command)
 {
   job->pipeline[job->num_stages] = *command;    //assign it the entire command struct till this point 
   job->num_stages++;
+
+  //reset command struct here ?
+
+}
+
+void handle_IO_output(Job *job, Command *command, int *i)
+{
+  int *temp_index = i;
+  char** tokens = command->tokens;
+
+  if (command->tokens[++(*temp_index)] != NULL ) {
+    printf(" This is the value of tokens: %s\n", tokens[(*temp_index)]);
+    job->outfile_path = tokens[(*temp_index)];
+  }
+  
+  (*i)++;
+  (*i)++;
+
+
+
 
 }
