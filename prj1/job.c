@@ -15,19 +15,19 @@
 
 void run_job(Job * job, Command* command)
 {
+    //cant handle more than 1 pipe at this point
+    if (job->num_stages > 1){
+        perror("Error! More than 1 pipe was detected\n");
+        return;
+    }
 
-    //job->num_stages = (unsigned int) contains_pipe_char(command);          //num_stages is the total pipes
-    //printf("The number of pipes are: %d",job->num_stages);
-    job->num_stages = contains_pipe_char(command);
     
+    run_command(command);
+    
+
    
 
     
-    //cant handle more than 1 pipe at this point
-    // if (job->num_stages > 1){
-    //     perror("Error! More than 1 pipe was detected\n");
-    //     return;
-    // }
 
 
 }

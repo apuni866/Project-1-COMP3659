@@ -8,7 +8,7 @@
 
 int tokenizer (char *input_buffer, Command* command);
 int parse(Command *command, Job *job);
-void handle_special_token(Command* command, Job* job, int i);
+void handle_special_token(Command* command, Job* job, int *i);
 int check_token(char** tokens, int i);
 
 
