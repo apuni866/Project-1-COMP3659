@@ -11,6 +11,8 @@
 
 #include "parse.h"
 
+#include <string.h>
+
 void get_command(Command* command){
   //char buffer[MAX_BUFFER_SIZE]; // Buffer to hold the command line input
   int bytesRead;
@@ -52,8 +54,9 @@ int run_command(Command* command, int input_fd, int output_fd)
 
   int child_status;
   int pid;
+  
   //char * const envp[] = {NULL};
-  char * envp[] = {(char *)"PATH=/bin",0};
+  char * envp[] = {(char *)"PATH=/bin",NULL};
   char * const path = command->argv[0]; //direct path
   char curr_dir_path[MAX_BUFFER_SIZE] = "/bin/"; //current directory path.
   strncat(curr_dir_path, path, get_strlen(path)+ 1);
@@ -69,37 +72,39 @@ int run_command(Command* command, int input_fd, int output_fd)
   if(pid == 0)
   {
 
-   printf("BEFORE----the output != INIT_VAL------\n");
+    //printf("BEFORE----the output != INIT_VAL------\n");
     if (output_fd != INIT_VALUE)
     {
-      int original_stdout = dup(STDOUT_FILENO);
+      //original_stdout = dup(STDOUT_FILENO);
       if (dup2(output_fd, STDOUT_FILENO) == -1)
       {
         perror("Failed to redirect stdout.\n");
         close(output_fd);
         return 0;
       }
-      close(command->output_fd);
+      close(output_fd);
       //reset the value here for output_fd back to original?
 
-      dup2(original_stdout,STDOUT_FILENO);
-      close(original_stdout);
+      //dup2(original_stdout,STDOUT_FILENO);
+      //close(original_stdout);
       
-      command->input_fd = -1;
-      command->output_fd = -1;
+      //command->input_fd = -1;
+      //command->output_fd = -1;
     }
-    printf("Got under the output != INIT_VAL\n");
+    
 
-
-
-    //attempt to open direct path and then attempt current directory.
-    // mostly just for convenient for testing later.
     //if (execve(path,command->argv,envp)== -1)
+      for (int j = 0; command->argv[j] != NULL; j++) {
+      printf("argv[%d]: %s (length: %zu)\n", j, command->argv[j], strlen(command->argv[j]));
+      }
+
       if (execve(curr_dir_path, command->argv, envp) == -1){  //this works by itself no need for upper if block
 	      perror("The execeve could not open process");
 	      exit(EXIT_FAIL);
       }
 	  
+      //dup2(original_stdout,STDOUT_FILENO);
+      //close(original_stdout);
   }
   else{
     waitpid(pid, &child_status, 0); 

@@ -28,5 +28,7 @@ void run_job(Job * job, Command* command);
 void reset_job(Job *job);
 void open_output_file(Job *job, Command *command);
 
+void print_argv(Command *command);
+
 
 #endif

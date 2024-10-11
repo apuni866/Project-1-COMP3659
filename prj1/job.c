@@ -43,12 +43,13 @@ void run_job(Job * job, Command* command)
         printf("Inisde of job != outfile path\n");
         //open_output_file(job,command);
         command->output_fd = open(job->outfile_path, O_WRONLY | O_CREAT | O_TRUNC, FILE_FLAG); 
-        if (command->output_fd == -1)
-        {
+        if (command->output_fd == -1){
             perror("Something went wrong with opening the specified file.\n");
             return;
         }
     }
+
+    print_argv(command);
   
 
     // if (job->infile_path != NULL)
@@ -59,6 +60,7 @@ void run_job(Job * job, Command* command)
     printf("Calling run_command...\n");
     run_command(command, command->input_fd, command->output_fd);
     reset_job(job);
+    reset_command_struct(command);
 
 }
 
@@ -82,4 +84,29 @@ void open_output_file(Job *job,Command *command)
         perror("Something went wrong with opening the specified file.\n");
         return;
     }
+}
+
+void print_argv(Command *command)
+{
+  printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ARGUMENT VECTOR DEBUG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+  printf("Command Arguments (argc = %d):\n", command->argc);
+
+  for (unsigned int i = 0; i < command->argc; i++)
+  {
+    if (command->argv[i] != NULL)
+    {
+      printf("argv[%d]: %s\n", i, command->argv[i]);
+    }
+    else
+    {
+      printf("argv[%d]: NULL\n", i);
+    }
+  }
+
+  // Print the last NULL pointer in argv
+  if (command->argv[command->argc] == NULL)
+  {
+    printf("argv[%d]: NULL\n", command->argc);
+  }
+  printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ END DEBUG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 }

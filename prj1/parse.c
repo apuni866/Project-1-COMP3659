@@ -44,8 +44,6 @@ int tokenizer(char *input_buffer, Command* command)
 int parse(Command *command, Job *job)
 {
 
-  //find ls -al | now we want to put ls -al into pipeline[i] and consume pipe char |
-
   char** temp = NULL; //for temp array
   int i = 0;
   char** tokens = command->tokens; 
@@ -56,16 +54,13 @@ int parse(Command *command, Job *job)
   while(tokens[i] != NULL && i < MAX_ARGS)  
   {
     printf("Under the tokens[i] != NULL cond'n \n");
+    printf("Tokens is: %s\n", tokens[i]);
     while(check_token(tokens, i) == REGULAR_TOKEN) 
     {
       command->argv[i] = tokens[i];
       printf(" At the top of check_token WHILE LOOP ----\n");
-
-      //printf("*tokens[i] = (%c),\n",*tokens[i]);
       printf("tokens[i] = (%s),\n",tokens[i]);
-      
       command->argc++;
-      //printf("under argc\n");
       i++;
     }
 
@@ -156,6 +151,8 @@ void handle_IO_output(Job *job, Command *command, int *i)
   if (tokens[*i + 1] != NULL ) {
     printf(" This is the value of tokens: %s\n", tokens[*i + 1]);
     job->outfile_path = tokens[*i + 1];
+    tokens[*i + 1] = NULL;
+
   }
   
   *i += 2;
