@@ -6,18 +6,34 @@
 #include "constants.h"
 #include "memory.h"
 #include "command.h"
+#include "job.h"
+#include "parse.h"
   
 int main ()
 {
   Command command;
+  Job job;
   command.memory_error_flag = false;
+  command.input_fd = -1;
+  command.output_fd = -1;
+  job.infile_path = NULL;
+  job.outfile_path = NULL;
+  
+
  
   while (true)
   {
     get_command(&command);
-
+    parse(&command,&job);
+   
     if (string_compare(command.argv[0],"exit",4) == 0)    
       break;
+
+    // clear command works 
+    if (string_compare(command.argv[0],"clear",5) == 0){
+      write(STDOUT_FILENO, "\033[H\033[J",7);
+      get_command(&command);
+    }
     
     if (string_compare(command.argv[0],"exit",4) == -1)
       continue;    
@@ -28,11 +44,14 @@ int main ()
       break;
     }
 
-    run_command(&command);
+    run_job(&job,&command);
+    //run_command(&command);
     reset_command_struct(&command);
     free_all();
  
   }
+
+
   return 0;
 }
 
