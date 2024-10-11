@@ -53,9 +53,11 @@ int parse(Command *command, Job *job)
   if (tokens == NULL) 
     return -1;
 
-  while(tokens[i] != NULL && i < MAX_ARGS)  {
+  while(tokens[i] != NULL && i < MAX_ARGS)  
+  {
     printf("Under the tokens[i] != NULL cond'n \n");
-    while(check_token(tokens, i) == REGULAR_TOKEN) {
+    while(check_token(tokens, i) == REGULAR_TOKEN) 
+    {
       command->argv[i] = tokens[i];
       printf(" At the top of check_token WHILE LOOP ----\n");
 
@@ -66,14 +68,17 @@ int parse(Command *command, Job *job)
       //printf("under argc\n");
       i++;
     }
-    //printf("henadle spec toekn bforew\n");
+
+    if (check_token(command->argv, 0) == SPECIAL_TOKEN)
+      return -1;
+
     handle_special_token(command, job, &i);
     printf("Under the handle specl token call inside parse\n");
   }
-  //command->argv[i] = NULL;
 
   printf("leaving parse\n");
   return 0;
+
 }
 void handle_special_token(Command* command, Job* job, int *i) 
 { 
@@ -119,7 +124,11 @@ int check_token(char** tokens, int i)
   printf("RIGHT before doing *token inside of check_token\n");
   switch (*token) {
     case '\0':   return -1;
-    case PIPE: return SPECIAL_TOKEN;
+    
+    case PIPE: 
+    return SPECIAL_TOKEN;
+    printf("Inside of PIPE switch case\n"); 
+    
     case IO_IN: return SPECIAL_TOKEN;
     case IO_OUT:
     printf("Inside fo IO_OUT switch case\n"); 

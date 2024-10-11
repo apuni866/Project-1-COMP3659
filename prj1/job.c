@@ -39,7 +39,8 @@ void run_job(Job * job, Command* command)
     // }
    
     if (job->outfile_path != NULL)
-    {
+    {      
+        printf("Inisde of job != outfile path\n");
         //open_output_file(job,command);
         command->output_fd = open(job->outfile_path, O_WRONLY | O_CREAT | O_TRUNC, FILE_FLAG); 
         if (command->output_fd == -1)

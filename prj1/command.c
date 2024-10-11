@@ -69,17 +69,6 @@ int run_command(Command* command, int input_fd, int output_fd)
   if(pid == 0)
   {
 
-    //  if (input_fd != STDIN_FILENO)
-    // {
-    //   dup2(input_fd, STDIN_FILENO);
-    //   close(input_fd);
-    // }
-    // if (output_fd != STDOUT_FILENO)
-    // {
-    //   dup2(output_fd, STDOUT_FILENO);
-    //   close(output_fd);
-    // }
-
    printf("BEFORE----the output != INIT_VAL------\n");
     if (output_fd != INIT_VALUE)
     {
@@ -127,7 +116,7 @@ void reset_command_struct(Command* command)
   command->argv[0] = NULL;
   command->input_fd = -1;
   command->output_fd = -1;
-  //free_all();
+  free_all();
 }
 
 void flush()
