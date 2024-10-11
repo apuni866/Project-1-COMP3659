@@ -48,17 +48,17 @@ int parse(Command *command, Job *job)
 
   char** temp = NULL; //for temp array
   int i = 0;
-  int j = 0;
-
   char** tokens = command->tokens; 
 
   if (tokens == NULL) 
     return -1;
 
-  while(tokens[i] != NULL) {
+  while(tokens[i] != NULL && i < MAX_ARGS)  {
     printf("Under the tokens[i] != NULL cond'n \n");
     while(check_token(tokens, i) == REGULAR_TOKEN) {
       command->argv[i] = tokens[i];
+      printf(" At the top of check_token WHILE LOOP ----\n");
+
       //printf("*tokens[i] = (%c),\n",*tokens[i]);
       printf("tokens[i] = (%s),\n",tokens[i]);
       
@@ -70,6 +70,7 @@ int parse(Command *command, Job *job)
     handle_special_token(command, job, &i);
     printf("Under the handle specl token call inside parse\n");
   }
+  //command->argv[i] = NULL;
 
   printf("leaving parse\n");
   return 0;
@@ -77,7 +78,7 @@ int parse(Command *command, Job *job)
 void handle_special_token(Command* command, Job* job, int *i) 
 { 
   char** tokens = command->tokens;
-  if (tokens[*i] == NULL) {
+  if (tokens[*i] == NULL) { 
     command->argv[*i] = NULL;
     return;
   }
@@ -90,8 +91,6 @@ void handle_special_token(Command* command, Job* job, int *i)
     break;
 
     case IO_IN: 
-    //job->infile_path = tokens[++(*i)];
-    //job->pipeline[job->num_stages] = *command;
     (*i)++;
     break;
 
@@ -99,7 +98,6 @@ void handle_special_token(Command* command, Job* job, int *i)
     //job->outfile_path = tokens[++(*i)];          //skip to the file name from the special_char
     //job->pipeline[job->num_stages] = *command;
     handle_IO_output(job,command,i);
-    //(*i)++;                                       //skip file name as we dont want it in the argv
     break;
 
     case BACKGROUND:
@@ -109,17 +107,27 @@ void handle_special_token(Command* command, Job* job, int *i)
 }
 int check_token(char** tokens, int i) 
 {
-  char *token = tokens[i];
-  if (token == NULL) return 0;
-  switch (*token) {
-    case '\0':   return -1; break;
-    case PIPE: return SPECIAL_TOKEN; break;
-    case IO_IN: return SPECIAL_TOKEN; break;
-    case IO_OUT: return SPECIAL_TOKEN; break;
-    case BACKGROUND: return SPECIAL_TOKEN; break;
-    default: return REGULAR_TOKEN;
+  printf(" At the top of check_token\n");
+  if (tokens == NULL || tokens[i] == NULL) { 
+    printf("Inside of the if tokens[i] == NULL\n");
+    return 0;
   }
 
+  char *token = tokens[i];
+
+
+  printf("RIGHT before doing *token inside of check_token\n");
+  switch (*token) {
+    case '\0':   return -1;
+    case PIPE: return SPECIAL_TOKEN;
+    case IO_IN: return SPECIAL_TOKEN;
+    case IO_OUT:
+    printf("Inside fo IO_OUT switch case\n"); 
+    return SPECIAL_TOKEN;
+    case BACKGROUND: return SPECIAL_TOKEN;
+    default: return REGULAR_TOKEN;
+  }
+  
 }
 
 void handle_pipeline(Job *job, Command *command)
@@ -133,18 +141,14 @@ void handle_pipeline(Job *job, Command *command)
 
 void handle_IO_output(Job *job, Command *command, int *i)
 {
-  int *temp_index = i;
+  printf("Inside of handle_IO_output (at the top)\n");
   char** tokens = command->tokens;
 
-  if (command->tokens[++(*temp_index)] != NULL ) {
-    printf(" This is the value of tokens: %s\n", tokens[(*temp_index)]);
-    job->outfile_path = tokens[(*temp_index)];
+  if (tokens[*i + 1] != NULL ) {
+    printf(" This is the value of tokens: %s\n", tokens[*i + 1]);
+    job->outfile_path = tokens[*i + 1];
   }
   
-  (*i)++;
-  (*i)++;
-
-
-
+  *i += 2;
 
 }

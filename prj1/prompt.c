@@ -16,8 +16,10 @@ int main ()
   command.memory_error_flag = false;
   command.input_fd = -1;
   command.output_fd = -1;
+  command.argc = 0;
   job.infile_path = NULL;
   job.outfile_path = NULL;
+  
   
 
  
@@ -25,7 +27,9 @@ int main ()
   {
     get_command(&command);
     parse(&command,&job);
-   
+    
+    printf("IN main loop under the parse call\n");
+
     if (string_compare(command.argv[0],"exit",4) == 0)    
       break;
 
@@ -44,6 +48,7 @@ int main ()
       break;
     }
 
+    printf("Before RUN JOB in main\n");
     run_job(&job,&command);
     //run_command(&command);
     reset_command_struct(&command);
@@ -51,6 +56,7 @@ int main ()
  
   }
 
+  printf("Have bokren from the main loop\n");
 
   return 0;
 }

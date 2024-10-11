@@ -15,7 +15,7 @@ void get_command(Command* command){
   //char buffer[MAX_BUFFER_SIZE]; // Buffer to hold the command line input
   int bytesRead;
   int index = 0;
-  char *buffer = alloc(MAX_BUFFER_SIZE);  //max_buffer_size = 256  
+  char *buffer = alloc(MAX_BUFFER_SIZE + 1);  
 
   write(STDOUT_FILENO, PROMPT_SYMBOL, PROMPT_SYMBOL_SIZE); // CMD line Symbol 
 
@@ -58,9 +58,6 @@ int run_command(Command* command, int input_fd, int output_fd)
   char curr_dir_path[MAX_BUFFER_SIZE] = "/bin/"; //current directory path.
   strncat(curr_dir_path, path, get_strlen(path)+ 1);
 
-
-  //we'll add pipe here later / io redirect later
-  
   pid = fork();
   
   if (pid == -1){
@@ -69,7 +66,7 @@ int run_command(Command* command, int input_fd, int output_fd)
   }
 
   
-  if(pid ==0)
+  if(pid == 0)
   {
 
     //  if (input_fd != STDIN_FILENO)
@@ -83,26 +80,34 @@ int run_command(Command* command, int input_fd, int output_fd)
     //   close(output_fd);
     // }
 
+   printf("BEFORE----the output != INIT_VAL------\n");
     if (output_fd != INIT_VALUE)
     {
-      if (dup2(command->output_fd, STDOUT_FILENO) == -1)
+      int original_stdout = dup(STDOUT_FILENO);
+      if (dup2(output_fd, STDOUT_FILENO) == -1)
       {
         perror("Failed to redirect stdout.\n");
-        close(command->output_fd);
+        close(output_fd);
         return 0;
       }
       close(command->output_fd);
       //reset the value here for output_fd back to original?
 
+      dup2(original_stdout,STDOUT_FILENO);
+      close(original_stdout);
+      
+      command->input_fd = -1;
+      command->output_fd = -1;
     }
+    printf("Got under the output != INIT_VAL\n");
 
 
 
     //attempt to open direct path and then attempt current directory.
     // mostly just for convenient for testing later.
     //if (execve(path,command->argv,envp)== -1)
-      if (execve(curr_dir_path, command->argv, envp) ==-1){  //this works by itself no need for upper if block
-	      perror("Could not open process");
+      if (execve(curr_dir_path, command->argv, envp) == -1){  //this works by itself no need for upper if block
+	      perror("The execeve could not open process");
 	      exit(EXIT_FAIL);
       }
 	  
@@ -120,6 +125,8 @@ void reset_command_struct(Command* command)
   command->argc = 0;
   command->background = false;
   command->argv[0] = NULL;
+  command->input_fd = -1;
+  command->output_fd = -1;
   //free_all();
 }
 
@@ -133,8 +140,3 @@ void flush()
     ;
   
 }
-
-/*-----
-int handle_IO_redirection()
-{
-}*/
