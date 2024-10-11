@@ -9,11 +9,13 @@
 #include "command.h"
 #include "memory.h"
 
+#include "parse.h"
+
 void get_command(Command* command){
   //char buffer[MAX_BUFFER_SIZE]; // Buffer to hold the command line input
   int bytesRead;
   int index = 0;
-  char *buffer = alloc(MAX_BUFFER_SIZE);  //max_buffer_size = 256  
+  char *buffer = alloc(MAX_BUFFER_SIZE + 1);  
 
   write(STDOUT_FILENO, PROMPT_SYMBOL, PROMPT_SYMBOL_SIZE); // CMD line Symbol 
 
@@ -33,26 +35,29 @@ void get_command(Command* command){
 
   buffer[bytesRead-1] = '\0';                // Null terminate here as within the 'parse' func'n a null check is done for this buffer
 
-  parse(buffer, command->argv);            /* Pass in the command->argv as 'parse' populates the argument
+  /*parse(buffer, command->argv);*/            /* Pass in the command->argv as 'parse' populates the argument
 					        vector with the pointer to the location of the argument string 
 					        this means in the main (prompt.c) we can just see if command.argv[0] == "exit" */
-  /*reset_command_struct(command);*/
+  
+  printf("calling tokenizer\n");
+  tokenizer(buffer, command);   
+ 
   
   return;
 }
 
-int run_command(Command* command){
+
+int run_command(Command* command, int input_fd, int output_fd)
+{
 
   int child_status;
   int pid;
-  char * const envp[] = {NULL};
+  //char * const envp[] = {NULL};
+  char * envp[] = {(char *)"PATH=/bin",0};
   char * const path = command->argv[0]; //direct path
   char curr_dir_path[MAX_BUFFER_SIZE] = "/bin/"; //current directory path.
   strncat(curr_dir_path, path, get_strlen(path)+ 1);
 
-
-  //we'll add pipe here later / io redirect later
- 
   pid = fork();
   
   if (pid == -1){
@@ -61,13 +66,37 @@ int run_command(Command* command){
   }
 
   
-  if(pid ==0){
+  if(pid == 0)
+  {
+
+   printf("BEFORE----the output != INIT_VAL------\n");
+    if (output_fd != INIT_VALUE)
+    {
+      int original_stdout = dup(STDOUT_FILENO);
+      if (dup2(output_fd, STDOUT_FILENO) == -1)
+      {
+        perror("Failed to redirect stdout.\n");
+        close(output_fd);
+        return 0;
+      }
+      close(command->output_fd);
+      //reset the value here for output_fd back to original?
+
+      dup2(original_stdout,STDOUT_FILENO);
+      close(original_stdout);
+      
+      command->input_fd = -1;
+      command->output_fd = -1;
+    }
+    printf("Got under the output != INIT_VAL\n");
+
+
 
     //attempt to open direct path and then attempt current directory.
     // mostly just for convenient for testing later.
-    if (execve(path,command->argv,envp)== -1)
-      if (execve(curr_dir_path, command->argv, envp) ==-1){
-	      perror("could not open process");
+    //if (execve(path,command->argv,envp)== -1)
+      if (execve(curr_dir_path, command->argv, envp) == -1){  //this works by itself no need for upper if block
+	      perror("The execeve could not open process");
 	      exit(EXIT_FAIL);
       }
 	  
@@ -79,21 +108,24 @@ int run_command(Command* command){
   return 0;
 }
 
-/******
- *
- ******/
-void reset_command_struct(Command* command){
+
+void reset_command_struct(Command* command)
+{
   command->argc = 0;
   command->background = false;
   command->argv[0] = NULL;
-  //free_all();
+  command->input_fd = -1;
+  command->output_fd = -1;
+  free_all();
 }
 
 void flush()
 {
   char discard;
+  
+  printf("Flushing ...\n");
+  
   while( read(STDIN_FILENO, &discard, 1) > 0 && discard != '\n')
-    {
-      printf("Flushing ...\n");
-    }
+    ;
+  
 }
