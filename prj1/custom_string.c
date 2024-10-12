@@ -4,6 +4,7 @@
 
 
 
+
 /************************
  * This is a basic 'strncmp' funtion which
  *  compares if two string are equal. Very
@@ -31,53 +32,6 @@ int string_compare(const char * string1, const char* string2, size_t byte_length
   return 0;
 }
 
-/************************************
- * This routine return the number of arguments present
- *    within the cmd line.
- *
- *  Ex. $ do something
- *
- *    This returns '2' (treats 'do' as 1 and 'something' as 1)
- *
- *
- *
- *
- ***********************************/
-int parse (char *input_buffer, char *args[])
-{
-  int counter = 0;
-
-  //ignore white space
-  while(*input_buffer == ' ')
-  input_buffer++;
-
-
-  //this main loop fills the argument array with the arguments found from the input buffer
-  while(*input_buffer != '\0' && counter < MAX_ARGS){ // -1 ??
-
-    args[counter] = input_buffer;
-    counter++;
-
-    //move ptr along
-    while(*input_buffer != ' ' && *input_buffer != '\0')
-      *input_buffer++;
-
-
-    //repace whitespace with a null or slash (will be helpfull later when dealing with the bin/ ...)
-    if (*input_buffer == ' '){
-
-      //*input_buffer = '\0';
-      *input_buffer = '\0';
-      *input_buffer++;
-
-      }
-  }
-  // nake note of this null 
-  args[counter] = NULL; //null terminate this for execve(x,y,NULL) as it is a requirement (says in the manual 2 execve)
-
-  return counter;
-
-}
 
 /*********
  *  This is a bsaic string copy funtion which copies 
@@ -144,12 +98,14 @@ char *strncat(char *destination, const char *source, size_t src_byte_len)
 }
 /*Checks if an argument in argv contains the piping character "|"*/
 int contains_pipe_char(Command *command) {
-    for (unsigned int i = 0; i < command->argc; i++) {
+    unsigned int i;
+    int pipe_count = 0;
+    for (i = 0; i < command->argc; i++) {
         if (string_compare(command->argv[i], "|", get_strlen(command->argv[i])) == 0) {
-            return 1;  // Pipe found
+            pipe_count++;  // Pipe found (before: return 1) 
         }
     }
-    return 0;  // No pipe found
+    return pipe_count;  
 }
 /***************************************************
 * Checks if an argument in argv contains the I/O 
@@ -159,7 +115,7 @@ int contains_pipe_char(Command *command) {
 * Returns 2 if "<" is found
 * Returns 0 if neither is found
 *****************************************************/
-int contains_redirection_char(Command *command) {
+int contains_redirection_char(Command *command) { //what if we return index instead..?
     for (unsigned int i = 0; i < command->argc; i++) {
       
         if (string_compare(command->argv[i], ">", get_strlen(command->argv[i])) == 0) 
