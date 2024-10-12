@@ -48,13 +48,12 @@ int main ()
       if (string_compare(command.argv[0],"exit",4) == -1)
         continue;    
 
-      if (command.memory_error_flag == true)
-      {
+      if (command.memory_error_flag == true){
         write(STDOUT_FILENO, "Failed to allocate more memory\n",31);
         break;
-      
+      }
 
-    }
+
     printf("Before RUN JOB in main\n");
     run_job(&job,&command);
     //run_command(&command);
