@@ -15,7 +15,7 @@
 
 void get_command(Command* command){
   //char buffer[MAX_BUFFER_SIZE]; // Buffer to hold the command line input
-  int bytesRead;
+  unsigned int bytesRead;
   int index = 0;
   char *buffer = alloc(MAX_BUFFER_SIZE + 1);  
 
@@ -55,8 +55,8 @@ int run_command(Command* command, int input_fd, int output_fd)
   int child_status;
   int pid;
   
-  //char * const envp[] = {NULL};
-  char * envp[] = {(char *)"PATH=/bin",NULL};
+  char * const envp[] = {NULL};
+  //char * envp[] = {(char *)"PATH=/bin/",NULL};
   char * const path = command->argv[0]; //direct path
   char curr_dir_path[MAX_BUFFER_SIZE] = "/bin/"; //current directory path.
   strncat(curr_dir_path, path, get_strlen(path)+ 1);
@@ -91,12 +91,23 @@ int run_command(Command* command, int input_fd, int output_fd)
       //command->input_fd = -1;
       //command->output_fd = -1;
     }
+    if (input_fd != INIT_VALUE)
+    { 
+      if (dup2(input_fd,STDIN_FILENO) == -1)
+      {
+        perror("Failed to redirect stdin.\n");
+        close(input_fd);
+        return 0;
+      }
+      close(input_fd);
+
+    }
     
 
     //if (execve(path,command->argv,envp)== -1)
-      for (int j = 0; command->argv[j] != NULL; j++) {
-      printf("argv[%d]: %s (length: %zu)\n", j, command->argv[j], strlen(command->argv[j]));
-      }
+      // for (int j = 0; command->argv[j] != NULL; j++) {
+      // printf("argv[%d]: %s (length: %zu)\n", j, command->argv[j], strlen(command->argv[j]));
+      // }
 
       if (execve(curr_dir_path, command->argv, envp) == -1){  //this works by itself no need for upper if block
 	      perror("The execeve could not open process");
@@ -122,6 +133,7 @@ void reset_command_struct(Command* command)
   command->input_fd = -1;
   command->output_fd = -1;
   free_all();
+  //flush();
 }
 
 void flush()
@@ -132,5 +144,15 @@ void flush()
   
   while( read(STDIN_FILENO, &discard, 1) > 0 && discard != '\n')
     ;
-  
+
+
 }
+
+//also add elwse if bytesRead == 1 
+//    do something here to handle that 'enter' key press
+// void validate_bytesRead(unsigned int bytesRead)
+// {
+
+
+
+// }

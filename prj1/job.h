@@ -29,6 +29,7 @@ void reset_job(Job *job);
 void open_output_file(Job *job, Command *command);
 
 void print_argv(Command *command);
+void list_all_debug(Command *command);
 
 
 #endif

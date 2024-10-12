@@ -37,7 +37,13 @@ int tokenizer(char *input_buffer, Command* command)
       *input_buffer++;
       }
   }
-  args[counter] = NULL; //null terminate this for execve(x,y,NULL) as it is a requirement (says in the manual 2 execve)    
+  args[counter] = NULL; //null terminate this for execve(x,y,NULL) as it is a requirement (says in the manual 2 execve)   
+  //*args[counter] = '\0';
+
+  //handle edge case
+  if (counter == MAX_ARGS)
+    args[MAX_ARGS - 1] = NULL;
+
   return counter;
 }
 
@@ -55,6 +61,7 @@ int parse(Command *command, Job *job)
   {
     printf("Under the tokens[i] != NULL cond'n \n");
     printf("Tokens is: %s\n", tokens[i]);
+
     while(check_token(tokens, i) == REGULAR_TOKEN) 
     {
       command->argv[i] = tokens[i];
@@ -91,13 +98,13 @@ void handle_special_token(Command* command, Job* job, int *i)
     break;
 
     case IO_IN: 
-    (*i)++;
+    handle_IO(job,command,i,IO_IN);
     break;
 
     case IO_OUT:
     //job->outfile_path = tokens[++(*i)];          //skip to the file name from the special_char
     //job->pipeline[job->num_stages] = *command;
-    handle_IO_output(job,command,i);
+    handle_IO(job,command,i,IO_OUT);
     break;
 
     case BACKGROUND:
@@ -115,9 +122,9 @@ int check_token(char** tokens, int i)
 
   char *token = tokens[i];
 
-
   printf("RIGHT before doing *token inside of check_token\n");
-  switch (*token) {
+  switch (*token) 
+  {
     case '\0':   return -1;
     
     case PIPE: 
@@ -125,10 +132,13 @@ int check_token(char** tokens, int i)
     printf("Inside of PIPE switch case\n"); 
     
     case IO_IN: return SPECIAL_TOKEN;
+
     case IO_OUT:
     printf("Inside fo IO_OUT switch case\n"); 
     return SPECIAL_TOKEN;
+
     case BACKGROUND: return SPECIAL_TOKEN;
+
     default: return REGULAR_TOKEN;
   }
   
@@ -143,14 +153,20 @@ void handle_pipeline(Job *job, Command *command)
 
 }
 
-void handle_IO_output(Job *job, Command *command, int *i)
+void handle_IO(Job *job, Command *command, int *i, char io_char)
 {
   printf("Inside of handle_IO_output (at the top)\n");
   char** tokens = command->tokens;
 
   if (tokens[*i + 1] != NULL ) {
     printf(" This is the value of tokens: %s\n", tokens[*i + 1]);
-    job->outfile_path = tokens[*i + 1];
+   
+    if (io_char == IO_OUT)
+      job->outfile_path = tokens[*i + 1];
+    else
+      job->infile_path = tokens[*i + 1];
+    
+    //tokens[*i] = NULL;
     tokens[*i + 1] = NULL;
 
   }
@@ -158,3 +174,11 @@ void handle_IO_output(Job *job, Command *command, int *i)
   *i += 2;
 
 }
+
+// int validate_input(char **tokens)
+// {
+
+//   if (tokens == NULL || **tokens == '\n' || *tokem)
+
+
+// }

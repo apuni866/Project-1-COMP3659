@@ -80,9 +80,9 @@ size_t get_strlen(const char *input_str)
  *******/
 char *strncat(char *destination, const char *source, size_t src_byte_len)
 {
-  size_t i = 0;
+  //char *dest_start = destination;   //saved the start loc of destination
+  int i = 0;
 
-  
   while (*destination != '\0'){
     destination++;
   }
@@ -92,8 +92,9 @@ char *strncat(char *destination, const char *source, size_t src_byte_len)
     i++;
   }
 
+  destination[i] = '\0';    // added this
 
-  return destination;
+  return destination;      //changed this
   
 }
 /*Checks if an argument in argv contains the piping character "|"*/

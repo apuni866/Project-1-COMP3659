@@ -21,7 +21,6 @@ int main ()
   job.outfile_path = NULL;
   
   
-
  
   while (true)
   {
@@ -30,7 +29,7 @@ int main ()
     
     printf("IN main loop under the parse call\n");
 
-    if ( parse(&command,&job) == -1){
+    if (parse(&command,&job) == -1){
       reset_command_struct(&command);
       continue;
     }
@@ -44,9 +43,6 @@ int main ()
         reset_command_struct(&command);
         get_command(&command);
       }
-      
-      if (string_compare(command.argv[0],"exit",4) == -1)
-        continue;    
 
       if (command.memory_error_flag == true){
         write(STDOUT_FILENO, "Failed to allocate more memory\n",31);
