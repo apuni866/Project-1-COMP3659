@@ -40,21 +40,21 @@ void run_job(Job * job, Command* command)
    
     if (job->outfile_path != NULL)
     {      
-        printf("Inisde of job != outfile path\n");
+        printf("Inisde of job outfile path != NULL\n");
       //open_output_file(job,command);
-      command->output_fd = open(job->outfile_path, O_WRONLY | O_CREAT | O_TRUNC, FILE_FLAG); 
+      command->output_fd = open(job->outfile_path, O_CREAT | O_TRUNC | O_WRONLY , FILE_FLAG); 
       if (command->output_fd == -1){
         perror("Something went wrong with opening the specified file.\n");
         return;
      }
        
     }
-    else if (job->infile_path != NULL)
+    if (job->infile_path != NULL)
     {
       command->input_fd = open(job->infile_path, O_RDONLY); 
       if (command->input_fd == -1)
       {
-        perror("Something went wrong with opening the input file.\n");
+        perror("This file does not exist.\n");
         return;
 
       }
@@ -63,7 +63,10 @@ void run_job(Job * job, Command* command)
     }
 
     print_argv(command);
-  
+
+    printf("command->output_fd = %d\n",command->output_fd);
+    printf("command->input_fd = %d\n",command->input_fd);
+
 
     // if (job->infile_path != NULL)
     // {

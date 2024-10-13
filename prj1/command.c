@@ -69,37 +69,31 @@ int run_command(Command* command, int input_fd, int output_fd)
   }
 
   
-  if(pid == 0)
-  {
+  else if(pid == 0)
+  { 
 
     //printf("BEFORE----the output != INIT_VAL------\n");
-    if (output_fd != INIT_VALUE)
+    if (command->output_fd != INIT_VALUE)
     {
-      //original_stdout = dup(STDOUT_FILENO);
-      if (dup2(output_fd, STDOUT_FILENO) == -1)
+      if ( dup2(command->output_fd, STDOUT_FILENO) == -1 )
       {
         perror("Failed to redirect stdout.\n");
-        close(output_fd);
-        return 0;
+        close(command->output_fd);
+        exit(EXIT_FAIL);
       }
-      close(output_fd);
-      //reset the value here for output_fd back to original?
-
-      //dup2(original_stdout,STDOUT_FILENO);
-      //close(original_stdout);
-      
-      //command->input_fd = -1;
-      //command->output_fd = -1;
+      //write(1,"Before close\n",14);
+      close(command->output_fd);
     }
-    if (input_fd != INIT_VALUE)
+    if (command->input_fd != INIT_VALUE)
     { 
-      if (dup2(input_fd,STDIN_FILENO) == -1)
+      if (dup2(command->input_fd,STDIN_FILENO) == -1)
       {
         perror("Failed to redirect stdin.\n");
-        close(input_fd);
-        return 0;
+        close(command->input_fd);
+        exit(EXIT_FAIL);
       }
-      close(input_fd);
+      
+      close(command->input_fd);
 
     }
     
@@ -108,18 +102,16 @@ int run_command(Command* command, int input_fd, int output_fd)
       // for (int j = 0; command->argv[j] != NULL; j++) {
       // printf("argv[%d]: %s (length: %zu)\n", j, command->argv[j], strlen(command->argv[j]));
       // }
-
       if (execve(curr_dir_path, command->argv, envp) == -1){  //this works by itself no need for upper if block
 	      perror("The execeve could not open process");
 	      exit(EXIT_FAIL);
       }
 	  
-      //dup2(original_stdout,STDOUT_FILENO);
-      //close(original_stdout);
   }
   else{
     waitpid(pid, &child_status, 0); 
   }
+  
   
   return 0;
 }
@@ -128,10 +120,9 @@ int run_command(Command* command, int input_fd, int output_fd)
 void reset_command_struct(Command* command)
 {
   command->argc = 0;
-  command->background = false;
   command->argv[0] = NULL;
-  command->input_fd = -1;
-  command->output_fd = -1;
+  //command->input_fd = -1;
+  //command->output_fd = -1;
   free_all();
   //flush();
 }
