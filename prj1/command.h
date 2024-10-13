@@ -23,6 +23,5 @@ void get_command(Command *command);
 int run_command(Command *command, int input_fd, int output_fd);
 void reset_command_struct(Command *command);
 void flush();
-void print_argv(Command *command);
 
 #endif

@@ -12,7 +12,7 @@
 // Function to prompt user to hit enter between major sections
 void prompt_continue()
 {
-    printf("\nPress Enter to continue...\n");
+    // printf("\nPress Enter to continue...\n");
     while (getchar() != '\n')
         ;
 }
@@ -21,17 +21,17 @@ void print_test_result(const char *test_name, int result)
 {
     if (result)
     {
-        printf("%-40s [--PASS--]\n", test_name);
+        // printf("%-40s [--PASS--]\n", test_name);
     }
     else
     {
-        printf("%-40s [--FAIL--]\n", test_name);
+        // printf("%-40s [--FAIL--]\n", test_name);
     }
 }
 
 void test_custom_string()
 {
-    printf("Testing custom_string functions...\n");
+    // printf("Testing custom_string functions...\n");
 
     // Test string_compare
     const char *str1 = "hello";
@@ -101,15 +101,15 @@ void test_command()
 
     Command command;
     command.memory_error_flag = false;
-    printf("Testing command functions...\n");
+    // printf("Testing command functions...\n");
 
     // Test get_command
 
-    printf("\nEnter empty command\n");
+    // printf("\nEnter empty command\n");
     get_command(&command);
     print_test_result("get_command", command.argv[0] == NULL);
 
-    printf("Enter non-empty command\n");
+    // printf("Enter non-empty command\n");
     get_command(&command);                                     // Simulate getting a command
     print_test_result("get_command", command.argv[0] != NULL); // Assuming any input is valid
 
@@ -125,7 +125,7 @@ void test_command()
 // Function to test memory functions
 void test_memory()
 {
-    printf("Testing memory functions...\n");
+    // printf("Testing memory functions...\n");
 
     char *buffer = alloc(MAX_BUFFER_SIZE);
     print_test_result("alloc", buffer != NULL);
@@ -148,7 +148,7 @@ int main()
 
     test_memory();
 
-    printf("All tests completed.\n");
+    // printf("All tests completed.\n");
 
     return 0;
 }

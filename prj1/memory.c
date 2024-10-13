@@ -23,34 +23,30 @@ char *alloc(unsigned int size)
     freep += size;
     return allocated_block;
   }
-  
+
   else
     return NULL;
-  
-
 }
 
 void free_all()
 {
-  //printf("Location of freep before free_all() is: %p\n",(void*)freep);
+  ////printf("Location of freep before free_all() is: %p\n",(void*)freep);
   freep = heap;
-  //printf("Location of freep AFTER is: %p\n",(void*)freep);
-  
+  ////printf("Location of freep AFTER is: %p\n",(void*)freep);
 }
 char *resize(char *old_buffer)
 {
   int i;
   int old_size = get_strlen(old_buffer);
   int new_size = old_size * 2;
-  char *new_block = alloc (new_size);
+  char *new_block = alloc(new_size);
 
-  printf("old buf size --> %d\n",old_size);
-  printf("new buf size --> %d\n",new_size);
-  
-  
+  // printf("old buf size --> %d\n",old_size);
+  // printf("new buf size --> %d\n",new_size);
 
   // NO more memory left so return NULL
-  if (new_block == NULL){
+  if (new_block == NULL)
+  {
 
     return NULL;
   }
@@ -61,8 +57,5 @@ char *resize(char *old_buffer)
 
   new_block[i] = '\0';
 
-  
   return new_block;
-
-
 }
