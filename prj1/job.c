@@ -13,7 +13,7 @@
 
 void allocate_jobs(Job *job, Command *command)
 {
-  if (job->num_stages >= 1)
+  if (job->num_stages > 1)
   {
     run_job(job);
     return;
@@ -45,7 +45,7 @@ void allocate_jobs(Job *job, Command *command)
     print_argv(command, "inside run_job(), above run_command()");
     run_command(command, command->input_fd, command->output_fd);
   }
-  reset_job(job);
+  // reset_job(job);
   reset_command_struct(command);
 }
 void run_job(Job *job)
@@ -67,12 +67,14 @@ void run_job(Job *job)
   for (; stage < (job->num_stages - 1); stage++)
   {
     write(1, "loop\n", 6);
+    printf("stage: %d, job->num_stage: %d\n", stage, job->num_stages);
     pipe(pipefd);
 
     pid = fork();
 
     if (pid == 0)
     {
+
       if (infile != 0)
       {
         dup2(infile, 0);
@@ -84,7 +86,6 @@ void run_job(Job *job)
       close(pipefd[WRITE_END]);
 
       execve(job->pipeline[stage].argv[0], job->pipeline[stage].argv, envp);
-
       exit(EXIT_SUCCESS); // safetey exit. replace with error trap instead later.
     }
 
@@ -114,9 +115,14 @@ void run_job(Job *job)
   close(pipefd[WRITE_END]);
 
   if (!job->background)
+  {
+    // waitpid(pid, &child_status, 0);
     waitpid(pid2, &child_status, 0);
+  }
   else
     printf("hey its a backgroundjob");
+
+  reset_job(job);
 }
 void reset_job(Job *job)
 {
@@ -124,11 +130,11 @@ void reset_job(Job *job)
   job->outfile_path = NULL;
   int i;
 
-  for (i = 0; i < job->num_stages; i++)
+  for (i = 0; i < job->num_stages - 1; i++)
   {
     reset_command_struct(&job->pipeline[i]);
   }
-  job->num_stages = 0;
+  job->num_stages = 1;
 }
 
 void open_output_file(Job *job, Command *command)
@@ -143,6 +149,7 @@ void open_output_file(Job *job, Command *command)
 
 void print_argv(Command *command, char *message)
 {
+#if 1
   int temp_out_fd = command->output_fd;
   command->output_fd = STDOUT_FILENO;
   printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ARGUMENT VECTOR DEBUG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
@@ -171,6 +178,7 @@ void print_argv(Command *command, char *message)
   printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ END DEBUG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
   // resets the output fd to whatever it was before
   command->output_fd = temp_out_fd;
+#endif
 }
 void initialize_job(Job *job)
 {
