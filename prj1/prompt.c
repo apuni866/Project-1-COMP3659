@@ -14,14 +14,10 @@ int main()
   Command command;
   Job job;
   command.memory_error_flag = false;
-  // command.input_fd = -1;
-  // command.output_fd = -1;
-  // command.argc = 0;
-  //  job.infile_path = NULL;
-  //  job.outfile_path = NULL;
   reset_command_struct(&command);
   job.infile_path = '\0';
   job.outfile_path = '\0';
+  job.num_stages = 1;
 
   while (true)
   {

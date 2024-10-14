@@ -7,7 +7,7 @@
 
 int tokenizer(char *input_buffer, Command *command);
 int parse(Command *command, Job *job);
-void handle_special_token(Command *command, Job *job, int *i);
+void handle_special_token(Command *command, Job *job, int *i, int *j, int *pipe_index);
 int check_token(char **tokens, int i);
 void handle_pipeline(Job *job, Command *command);
 

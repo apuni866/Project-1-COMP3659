@@ -27,6 +27,8 @@ void get_command(Command *command)
   if (bytesRead <= 0)
   {
     // This should never happen because just think about it
+    printf("This should never happen because just think about it");
+    printf("%d\n", bytesRead);
     command->argv[0] = NULL;
     return;
   }
@@ -111,7 +113,6 @@ void reset_command_struct(Command *command)
 {
   command->argc = 0;
   command->background = false;
-  // command->argv[0] = NULL;
   command->input_fd = -1;
   command->output_fd = -1;
   free_all();
