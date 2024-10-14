@@ -8,7 +8,10 @@
 #include "command.h"
 #include "job.h"
 #include "parse.h"
-  
+
+void create_job(Job *job, char input_str[256]);
+void reset_job2(Job *job);
+
 int main ()
 {
   Command command;
@@ -117,11 +120,150 @@ int main ()
     0
   };
   
+  Job ex;
+  char input_str[MAX_BUFFER_SIZE];
   
- 
-  run_job(&eg4);
+  read(0, input_str, MAX_BUFFER_SIZE);
+  //printf("%s",input_str);
+
+  create_job(&ex, input_str);
+  for (int i = 0 ; i < ex.num_stages; i++){
+    for(int j = 0; j < ex.pipeline[i].argc; j++){
+      printf("%s ", ex.pipeline[i].argv[j]);
+      
+    }
+    printf(", argc = %d\n", ex.pipeline[i].argc);
+  }
+  printf("num stages: %d\n", ex.num_stages);
+  printf("outfile path: %s\n", ex.outfile_path);
+  printf("infile path: %s\n", ex.infile_path);
+  if(ex.background)
+    printf("its a background job! %d\n", ex.background);
+  else
+    printf("its a foreground job! %d\n", ex.background);
+
+
+  //  printf("%s", ex.pipeline[0].argv[2]);
+
+  
+
+  run_job(&ex);
+
+  
+  
+  //resets input str
+    for(int i ; i < MAX_BUFFER_SIZE; i++)
+  input_str[i] = '\0';
+  //run_job(&eg4);
   return 0;
 };
+
+void create_job(Job *job, char input_str[256]){
+  int len = get_strlen(input_str);
+  int pipeline_index = 0;
+  int argv_index = 0;
+  bool space_found = false;
+  bool pipeline_done = false;
+  char sp_char;
+  //printf("%d\n", len);
+
+  job->pipeline[pipeline_index].argv[argv_index] = &input_str[0];
+  job->pipeline[pipeline_index].argc = 1;
+  argv_index++;
+
+  job->num_stages = 1;
+  for (int i = 0; i < MAX_BUFFER_SIZE ; i++){
+    if(!pipeline_done){
+
+      
+      if(space_found&& !(input_str[i] == '|' ||
+			 input_str[i] == '<' ||
+			 input_str[i] == '>' ||
+			 input_str[i] == '&')){
+	space_found = false;
+	job->pipeline[pipeline_index].argv[argv_index] = &input_str[i];
+	job->pipeline[pipeline_index].argc++;
+	argv_index++;
+      }
+      if(input_str[i] == '|'){
+	space_found = false;
+	input_str[i] = '\0';
+	pipeline_index++;
+	argv_index = 0;
+
+	job->num_stages++;
+        do{
+	  i++;
+	}while(input_str[i] == ' ');
+	job->pipeline[pipeline_index].argv[argv_index] = &input_str[i];
+	job->pipeline[pipeline_index].argc = 1;
+	argv_index++;	  
+      }
+      else if(input_str[i] == '<' ||
+	      input_str[i] == '>' ||
+	      input_str[i] == '&'){
+	sp_char = input_str[i];
+	pipeline_done = true;
+	space_found = false;
+      }
+      else if (input_str[i] == ' ' ){
+	
+	input_str[i] = '\0';
+	space_found = true;
+       
+      }
+      else if(input_str[i] == '\n'){
+	space_found = false;
+	input_str[i] = '\0';
+	break;
+      }
+      
+    }
+    else{
+      if(input_str[i] == '<' || sp_char == '<'){
+	for(;input_str[i] == ' '|| input_str[i] == '<'; i++)
+	  input_str[i] = '\0';
+	sp_char = ' ';
+	job->outfile_path = &input_str[i];
+	
+      }
+      else if(input_str[i] == '>' || sp_char == '>'){
+	for(;input_str[i] == ' '|| input_str[i] == '>'; i++)
+	  input_str[i] = '\0';
+	sp_char = ' ';
+	job->infile_path = &input_str[i];
+	
+	
+      }
+      else if(input_str[i] == '&' || sp_char == '&'){
+	sp_char = ' ';
+	job->background = true;
+	
+	
+      }
+      if(input_str[i] == '\n' || input_str[i] == ' ')
+	input_str[i] = '\0';
+    }
+
+  }
+  return ;
+}
+
+void reset_job2(Job *job){
+  for (int i = 0; i < MAX_PIPELINE_LEN ; i++){
+    for (int j = 0; j < MAX_ARGS ; j++){
+      job->pipeline[i].argv[j] = '/0';
+    }
+    job->pipeline[i].argc = 0;
+  }
+  job->num_stages = 0;
+  job->infile_path = NULL;
+  job->outfile_path = NULL;
+  job->background = 0;
+
+
+  return;
+}
   
   /*
   while (true)
