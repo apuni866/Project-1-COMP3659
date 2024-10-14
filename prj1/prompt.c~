@@ -31,9 +31,9 @@ int main ()
     
     argument_count = parse(cmd_input, arguments);
 
-    printf("---> %d\n", argument_count);
-    //printf("%c\n", cmd_input[0]);
-    //printf("%s\n", arguments[0]);    
+    //printf("---> %d\n", argument_count);
+    ////printf("%c\n", cmd_input[0]);
+    ////printf("%s\n", arguments[0]);    
   
   }
 
@@ -47,17 +47,17 @@ int main ()
 
   if (space_left > srcLen)                         
   {
-    printf("Yes, there is enough size in the dest to cpy\n");
-    printf("%lu\n", srcLen);
-    printf("%lu\n", destLen);
-    printf("%lu\n", space_left);
+    //printf("Yes, there is enough size in the dest to cpy\n");
+    //printf("%lu\n", srcLen);
+    //printf("%lu\n", destLen);
+    //printf("%lu\n", space_left);
 
     strncat(temp2,temp1,srcLen);
-    printf("%s\n", temp2);    
+    //printf("%s\n", temp2);    
     
   }
   else{
-      printf("Copying failed, not enough space\n");
+      //printf("Copying failed, not enough space\n");
     }
   /*************************************************/  
 
@@ -65,18 +65,18 @@ int main ()
   char *block1 = alloc(500);
 
   if (block1 != NULL)
-    printf("B1 Allocation successful\n");
+    //printf("B1 Allocation successful\n");
   else
-    printf("B1 Allocation error\n");
+    //printf("B1 Allocation error\n");
 
 
 
   char *block2 = alloc(500);
 
   if (block2 != NULL)
-    printf("B2 Allocation successful\n");
+    //printf("B2 Allocation successful\n");
   else
-    printf("B2 Allocation error\n");
+    //printf("B2 Allocation error\n");
 
 
   free_all();
@@ -84,9 +84,9 @@ int main ()
   char *block3 = alloc(1024);
 
   if (block3 != NULL)
-    printf("B3 Allocation successful\n");
+    //printf("B3 Allocation successful\n");
   else
-    printf("B3 Allocation error\n");
+    //printf("B3 Allocation error\n");
 
   /*****************************************************/
 

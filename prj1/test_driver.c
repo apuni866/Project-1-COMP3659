@@ -10,23 +10,28 @@
 #include "constants.h"
 
 // Function to prompt user to hit enter between major sections
-void prompt_continue() {
-    printf("\nPress Enter to continue...\n");
-    while (getchar() != '\n');
+void prompt_continue()
+{
+    // printf("\nPress Enter to continue...\n");
+    while (getchar() != '\n')
+        ;
 }
 
-// Helper function to format test results
-void print_test_result(const char *test_name, int result) {
-    if (result) {
-        printf("%-40s [--PASS--]\n", test_name);
-    } else {
-        printf("%-40s [--FAIL--]\n", test_name);
+void print_test_result(const char *test_name, int result)
+{
+    if (result)
+    {
+        // printf("%-40s [--PASS--]\n", test_name);
+    }
+    else
+    {
+        // printf("%-40s [--FAIL--]\n", test_name);
     }
 }
 
-// Function to test custom_string functions
-void test_custom_string() {
-    printf("Testing custom_string functions...\n");
+void test_custom_string()
+{
+    // printf("Testing custom_string functions...\n");
 
     // Test string_compare
     const char *str1 = "hello";
@@ -87,38 +92,40 @@ void test_custom_string() {
     command.argv[3] = NULL;
     print_test_result("contains_redirection_char (input)", contains_redirection_char(&command) == IN_REDIRECT_CODE);
 
-    prompt_continue();  // After all custom_string tests
+    prompt_continue(); // After all custom_string tests
 }
 
 // Function to test command functions
-void test_command() {
+void test_command()
+{
 
     Command command;
     command.memory_error_flag = false;
-    printf("Testing command functions...\n");
+    // printf("Testing command functions...\n");
 
     // Test get_command
 
-    printf("\nEnter empty command\n");
+    // printf("\nEnter empty command\n");
     get_command(&command);
-    print_test_result("get_command", command.argv[0] == NULL); 
+    print_test_result("get_command", command.argv[0] == NULL);
 
-    printf("Enter non-empty command\n");
-    get_command(&command);  // Simulate getting a command
-    print_test_result("get_command", command.argv[0] != NULL);  // Assuming any input is valid
-    
+    // printf("Enter non-empty command\n");
+    get_command(&command);                                     // Simulate getting a command
+    print_test_result("get_command", command.argv[0] != NULL); // Assuming any input is valid
+
     int run_result = run_command(&command);
     print_test_result("run_command", run_result == 0);
 
     reset_command_struct(&command);
     print_test_result("reset_command_struct", command.argv[0] == NULL);
 
-    prompt_continue();  // After all command tests
+    prompt_continue(); // After all command tests
 }
 
 // Function to test memory functions
-void test_memory() {
-    printf("Testing memory functions...\n");
+void test_memory()
+{
+    // printf("Testing memory functions...\n");
 
     char *buffer = alloc(MAX_BUFFER_SIZE);
     print_test_result("alloc", buffer != NULL);
@@ -127,12 +134,13 @@ void test_memory() {
     print_test_result("resize", buffer != NULL);
 
     free_all();
-    print_test_result("free_all", 1);  // Assume free_all works without error
+    print_test_result("free_all", 1); // Assume free_all works without error
 
-    prompt_continue();  // After all memory tests
+    prompt_continue(); // After all memory tests
 }
 
-int main() {
+int main()
+{
 
     test_custom_string();
 
@@ -140,7 +148,7 @@ int main() {
 
     test_memory();
 
-    printf("All tests completed.\n");
+    // printf("All tests completed.\n");
 
     return 0;
 }

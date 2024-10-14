@@ -1,9 +1,9 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-#define MAX_BUFFER_SIZE 256 
+#define MAX_BUFFER_SIZE 256
 #define MAX_LEN 128
-#define MAX_ARGS 64
+#define MAX_ARGS 32
 #define STD_INPUT_FD 0
 #define PROMPT_SYMBOL ">_> "
 #define PROMPT_SYMBOL_SIZE 4
@@ -20,11 +20,13 @@
 #define FILE_FLAG 0644
 
 #define INIT_VALUE -1
+#define READ_END 0
+#define WRITE_END 1
 
-typedef enum {
+typedef enum
+{
   false = 0,
   true = 1
 } bool;
-
 
 #endif
