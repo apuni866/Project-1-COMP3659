@@ -10,7 +10,7 @@
 // first command store in job.pipline[0]
 // seconds commands store in job.pipeline[1]
 //
-#define MAX_PIPELINE_LEN 2
+#define MAX_PIPELINE_LEN 10
 
 typedef struct
 {
@@ -21,7 +21,8 @@ typedef struct
      int background;     /* 0=foreground, otherwise=background */
 } Job;
 
-void run_job(Job *job, Command *command);
+void run_job(Job *job);
+void allocate_jobs(Job *job, Command *command);
 void reset_job(Job *job);
 void open_output_file(Job *job, Command *command);
 

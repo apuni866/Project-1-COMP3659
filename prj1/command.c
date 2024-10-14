@@ -78,7 +78,16 @@ int run_command(Command *command, int input_fd, int output_fd)
       close(output_fd);
       // close(output_fd);
     }
-
+    if (input_fd != INIT_VALUE)
+    {
+      if (dup2(input_fd, STDIN_FILENO) == -1)
+      {
+        perror("Failed to redirect stdin.\n");
+        close(input_fd);
+        return 0;
+      }
+      close(input_fd);
+    }
     // if (execve(path,command->argv,envp)== -1)
     if (execve(curr_dir_path, command->argv, envp) == -1)
     // if (execve(curr_dir_path, command->argv, NULL) == -1)

@@ -77,6 +77,7 @@ int parse(Command *command, Job *job)
   // printf("leaving parse\n");
   return 0;
 }
+/*
 void handle_special_token(Command *command, Job *job, int *i)
 {
   char **tokens = command->tokens;
@@ -116,6 +117,47 @@ void handle_special_token(Command *command, Job *job, int *i)
     break;
   }
 }
+*/
+void handle_special_token(Command *command, Job *job, int *i)
+{
+  char **tokens = command->tokens;
+  if (tokens[*i] == NULL)
+  {
+    command->argv[*i] = NULL;
+    return;
+  }
+  switch (*tokens[*i])
+  {
+  case PIPE:
+    handle_pipeline(job, command);
+    (*i)++;
+    break;
+
+  case IO_IN:
+    handle_IO(job, command, i, IO_IN);
+
+    break;
+
+  case IO_OUT:
+    // printArray(tokens, (sizeof(tokens) / sizeof(tokens[0])));
+
+    if (tokens[*i + 1] != NULL)
+    {
+      printf("*i+1: %d, tokens[*i+1]: %s", *i + 1, tokens[*i + 1]);
+    }
+    else
+    {
+      printf("*i+1: %d, tokens[*i+1]: NULL", *i + 1);
+    }
+
+    handle_IO(job, command, i, IO_OUT);
+    break;
+
+  case BACKGROUND:
+
+    break;
+  }
+}
 int check_token(char **tokens, int i)
 {
   if (tokens == NULL || tokens[i] == NULL)
@@ -148,13 +190,17 @@ void handle_pipeline(Job *job, Command *command)
   job->num_stages++;
 }
 
-void handle_IO_output(Job *job, Command *command, int *i)
+void handle_IO(Job *job, Command *command, int *i, char io_char)
 {
   char **tokens = command->tokens;
 
   if (tokens[*i + 1] != NULL)
   {
-    job->outfile_path = tokens[*i + 1];
+    if (io_char == IO_OUT)
+      job->outfile_path = tokens[*i + 1];
+    else
+      job->infile_path = tokens[*i + 1];
+
     print_argv(command, job->outfile_path);
     tokens[*i + 1] = NULL;
   }

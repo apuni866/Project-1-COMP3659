@@ -58,14 +58,9 @@ int main()
       break;
     }
 
-    // printf("Before RUN JOB in main\n");
-    run_job(&job, &command);
-    // run_command(&command);
+    allocate_jobs(&job, &command);
     reset_command_struct(&command);
-    // free_all();
   }
-
-  // printf("Have bokren from the main loop\n");
 
   return 0;
 }

@@ -11,37 +11,113 @@
 #include "memory.h"
 #include "job.h"
 
-void run_job(Job *job, Command *command)
+void allocate_jobs(Job *job, Command *command)
 {
-  if (job->num_stages > 1)
+  if (job->num_stages >= 1)
   {
-    perror("Error! More than 1 pipe was detected\n");
-    job->num_stages = 0;
-
+    run_job(job);
     return;
   }
-
-  if (job->outfile_path != NULL)
+  else
   {
-    // printf("Inisde of job != outfile path\n");
-
-    command->output_fd = open(job->outfile_path, O_WRONLY | O_CREAT | O_TRUNC, FILE_FLAG);
-    if (command->output_fd == -1)
+    if (job->outfile_path != NULL)
     {
-      perror("Something went wrong with opening the specified file.\n");
-      return;
+      command->output_fd = open(job->outfile_path, O_WRONLY | O_CREAT | O_TRUNC, FILE_FLAG);
+      if (command->output_fd == -1)
+      {
+        perror("Something went wrong with opening the specified file.\n");
+        return;
+      }
     }
+    if (job->infile_path != NULL)
+    {
+      command->input_fd = open(job->infile_path, O_RDONLY);
+      if (command->input_fd == -1)
+      {
+        perror("This file does not exist.\n");
+        return;
+      }
+    }
+
+    // print_argv(command);
+
+    // printf("Calling run_command...\n");
+    print_argv(command, "inside run_job(), above run_command()");
+    run_command(command, command->input_fd, command->output_fd);
   }
-
-  // print_argv(command);
-
-  // printf("Calling run_command...\n");
-  print_argv(command, "inside run_job(), above run_command()");
-  run_command(command, command->input_fd, command->output_fd);
   reset_job(job);
   reset_command_struct(command);
 }
+void run_job(Job *job)
+{
+  int pipefd[2];
+  int child_status;
+  int pid, pid2;
+  char *const envp[] = {NULL};
+  int outfile;
+  int infile = 0;
+  int new_in;
+  int stage = 0;
 
+  if (job->infile_path)
+  {
+    infile = open(job->infile_path, O_RDONLY, 0644);
+    printf("infile: %s: %d\n", job->infile_path, infile);
+  }
+  for (; stage < (job->num_stages - 1); stage++)
+  {
+    write(1, "loop\n", 6);
+    pipe(pipefd);
+
+    pid = fork();
+
+    if (pid == 0)
+    {
+      if (infile != 0)
+      {
+        dup2(infile, 0);
+        close(infile);
+      }
+
+      close(pipefd[READ_END]);
+      dup2(pipefd[WRITE_END], 1);
+      close(pipefd[WRITE_END]);
+
+      execve(job->pipeline[stage].argv[0], job->pipeline[stage].argv, envp);
+
+      exit(EXIT_SUCCESS); // safetey exit. replace with error trap instead later.
+    }
+
+    close(pipefd[WRITE_END]);
+    infile = pipefd[READ_END];
+  }
+
+  pid2 = fork();
+  if (pid2 == 0)
+  {
+
+    if (job->outfile_path)
+    {
+      outfile = open(job->outfile_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+      printf("outfile: %s: %d\n", job->outfile_path, outfile);
+      dup2(outfile, 1);
+      close(outfile);
+    }
+
+    close(pipefd[WRITE_END]);
+    dup2(pipefd[READ_END], 0);
+
+    execve(job->pipeline[stage].argv[0], job->pipeline[stage].argv, envp);
+  }
+
+  close(pipefd[READ_END]);
+  close(pipefd[WRITE_END]);
+
+  if (!job->background)
+    waitpid(pid2, &child_status, 0);
+  else
+    printf("hey its a backgroundjob");
+}
 void reset_job(Job *job)
 {
   job->infile_path = NULL;
@@ -96,7 +172,19 @@ void print_argv(Command *command, char *message)
   // resets the output fd to whatever it was before
   command->output_fd = temp_out_fd;
 }
-
+void initialize_job(Job *job)
+{
+  /*
+  job =
+      {
+          {{{"/usr/bin/ls", "-al", "/library", NULL}, 3}},
+          1,
+          NULL,
+          NULL,
+          0};
+          */
+  reset_command_struct(&(job->pipeline[0]));
+}
 void printArray(char *arr[], size_t size)
 {
   printf("Array elements: [");
