@@ -120,34 +120,31 @@ int main ()
     0
   };
   
-  Job ex;
   char input_str[MAX_BUFFER_SIZE];
   
   read(0, input_str, MAX_BUFFER_SIZE);
   //printf("%s",input_str);
 
-  create_job(&ex, input_str);
-  for (int i = 0 ; i < ex.num_stages; i++){
-    for(int j = 0; j < ex.pipeline[i].argc; j++){
-      printf("%s ", ex.pipeline[i].argv[j]);
+  create_job(&job, input_str);
+    for (int i = 0 ; i < job.num_stages; i++){
+    for(int j = 0; j < job.pipeline[i].argc; j++){
+      printf("%s ", job.pipeline[i].argv[j]);
       
     }
-    printf(", argc = %d\n", ex.pipeline[i].argc);
+    printf(", argc = %d\n", job.pipeline[i].argc);
   }
-  printf("num stages: %d\n", ex.num_stages);
-  printf("outfile path: %s\n", ex.outfile_path);
-  printf("infile path: %s\n", ex.infile_path);
-  if(ex.background)
-    printf("its a background job! %d\n", ex.background);
+  printf("num stages: %d\n", job.num_stages);
+  printf("outfile path: %s\n", job.outfile_path);
+  printf("infile path: %s\n", job.infile_path);
+  if(job.background)
+    printf("its a background job! %d\n", job.background);
   else
-    printf("its a foreground job! %d\n", ex.background);
-
-
-  //  printf("%s", ex.pipeline[0].argv[2]);
+    printf("its a foreground job! %d\n", job.background);
+  
 
   
 
-  run_job(&ex);
+  run_job(&job);
 
   
   
@@ -203,8 +200,10 @@ void create_job(Job *job, char input_str[256]){
 	      input_str[i] == '>' ||
 	      input_str[i] == '&'){
 	sp_char = input_str[i];
+	input_str[i] = '\0';
 	pipeline_done = true;
 	space_found = false;
+	job->pipeline[pipeline_index].argv[argv_index] = NULL;
       }
       else if (input_str[i] == ' ' ){
 	
@@ -213,6 +212,7 @@ void create_job(Job *job, char input_str[256]){
        
       }
       else if(input_str[i] == '\n'){
+	job->pipeline[pipeline_index].argv[argv_index] = NULL;
 	space_found = false;
 	input_str[i] = '\0';
 	break;
@@ -220,22 +220,23 @@ void create_job(Job *job, char input_str[256]){
       
     }
     else{
-      if(input_str[i] == '<' || sp_char == '<'){
-	for(;input_str[i] == ' '|| input_str[i] == '<'; i++)
-	  input_str[i] = '\0';
-	sp_char = ' ';
-	job->outfile_path = &input_str[i];
-	
-      }
-      else if(input_str[i] == '>' || sp_char == '>'){
-	for(;input_str[i] == ' '|| input_str[i] == '>'; i++)
+      if(input_str[i] == IO_IN || sp_char == IO_IN){
+	for(;input_str[i] == ' '|| input_str[i] == IO_IN; i++)
 	  input_str[i] = '\0';
 	sp_char = ' ';
 	job->infile_path = &input_str[i];
 	
+      }
+      else if(input_str[i] == IO_OUT || sp_char == IO_OUT){
+	for(;input_str[i] == ' '|| input_str[i] == IO_OUT; i++)
+	  input_str[i] = '\0';
+	sp_char = ' ';
+	job->outfile_path = &input_str[i];
+	
 	
       }
       else if(input_str[i] == '&' || sp_char == '&'){
+	input_str[i] = '\0';
 	sp_char = ' ';
 	job->background = true;
 	
