@@ -2,6 +2,7 @@
     "files.associations": {
         "job.h": "c",
         "command.h": "c",
-        "parse.h": "c"
+        "parse.h": "c",
+        "constants.h": "c"
     }
 }

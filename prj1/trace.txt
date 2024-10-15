@@ -1,20 +1,19 @@
 main():
-    input_str = ['l','s', '\0', '|', ' ', 'l', 'e', 's', 's', \0']
+    input_str = ['l','s', ' ', '>', ' ', 't', '.', 't', 'x', t', '\0']
 
 create_job():
-job =             {
-          {{{ls | less}, 1}, {{less}, 1}},
-          2,
+      job = {
+          {{{ls > t.txt}, 1}},
+          1,
           NULL,
           NULL,
           0};
-    input_str = ['l','s','\0']    
-    pipeline_index = 1
-    int argv_index = 1;
-    bool space_found = false;
-    bool pipeline_done = false;
-    char sp_char;
-    i=9
+
+  int pipeline_index = 0;
+  int argv_index = 0;
+  bool space_found = false;
+  bool pipeline_done = false;
+  char sp_char;
 
 start_new_pipeline_stage:
     {

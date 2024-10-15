@@ -111,7 +111,6 @@ int run_command(Command *command, int input_fd, int output_fd)
 void reset_command_struct(Command *command)
 {
   command->argc = 0;
-  command->background = false;
   command->input_fd = -1;
   command->output_fd = -1;
   free_all();

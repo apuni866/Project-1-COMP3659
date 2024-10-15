@@ -26,7 +26,6 @@ int main()
           NULL,
           0};
 
-  command.memory_error_flag = false;
   reset_command_struct(&command);
   // job.infile_path = NULL;
   // job.outfile_path = NULL;
@@ -124,10 +123,107 @@ void set_input_output_paths(Job *job, char *input_str, int *pos, char sp_char)
     job->background = true;
   }
 }
-
-void create_job(Job *job, char input_str[MAX_BUFFER_SIZE])
+void create_job(Job *job, char input_str[256])
 {
   int len = get_strlen(input_str);
+  int pipeline_index = 0;
+  int argv_index = 0;
+  bool space_found = false;
+  bool pipeline_done = false;
+  char sp_char;
+  // printf("%d\n", len);
+
+  job->pipeline[pipeline_index].argv[argv_index] = &input_str[0];
+  job->pipeline[pipeline_index].argc = 1;
+  argv_index++;
+
+  job->num_stages = 1;
+  for (int i = 0; i < MAX_BUFFER_SIZE; i++)
+  {
+    if (!pipeline_done)
+    {
+
+      if (space_found && !(input_str[i] == '|' ||
+                           input_str[i] == '<' ||
+                           input_str[i] == '>' ||
+                           input_str[i] == '&'))
+      {
+        space_found = false;
+        job->pipeline[pipeline_index].argv[argv_index] = &input_str[i];
+        job->pipeline[pipeline_index].argc++;
+        argv_index++;
+      }
+      if (input_str[i] == '|')
+      {
+        space_found = false;
+        input_str[i] = '\0';
+        pipeline_index++;
+        argv_index = 0;
+
+        job->num_stages++;
+        do
+        {
+          i++;
+        } while (input_str[i] == ' ');
+        job->pipeline[pipeline_index].argv[argv_index] = &input_str[i];
+        job->pipeline[pipeline_index].argc = 1;
+        argv_index++;
+      }
+      else if (input_str[i] == '<' ||
+               input_str[i] == '>' ||
+               input_str[i] == '&')
+      {
+        sp_char = input_str[i];
+        input_str[i] = '\0';
+        pipeline_done = true;
+        space_found = false;
+        job->pipeline[pipeline_index].argv[argv_index] = NULL;
+      }
+      else if (input_str[i] == ' ')
+      {
+
+        input_str[i] = '\0';
+        space_found = true;
+      }
+      else if (input_str[i] == '\n')
+      {
+        job->pipeline[pipeline_index].argv[argv_index] = NULL;
+        space_found = false;
+        input_str[i] = '\0';
+        break;
+      }
+    }
+    else
+    {
+      if (input_str[i] == IO_IN || sp_char == IO_IN)
+      {
+        for (; input_str[i] == ' ' || input_str[i] == IO_IN; i++)
+          input_str[i] = '\0';
+        sp_char = ' ';
+        job->infile_path = &input_str[i];
+      }
+      else if (input_str[i] == IO_OUT || sp_char == IO_OUT)
+      {
+        for (; input_str[i] == ' ' || input_str[i] == IO_OUT; i++)
+          input_str[i] = '\0';
+        sp_char = ' ';
+        job->outfile_path = &input_str[i];
+      }
+      else if (input_str[i] == '&' || sp_char == '&')
+      {
+        input_str[i] = '\0';
+        sp_char = ' ';
+        job->background = true;
+      }
+      if (input_str[i] == '\n' || input_str[i] == ' ')
+        input_str[i] = '\0';
+    }
+  }
+  return;
+}
+#if 0
+void create_job(Job *job, char input_str[MAX_BUFFER_SIZE])
+{
   int pipeline_index = 0;
   int argv_index = 0;
   bool space_found = false;
@@ -186,3 +282,4 @@ void create_job(Job *job, char input_str[MAX_BUFFER_SIZE])
     }
   }
 }
+#endif
