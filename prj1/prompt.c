@@ -34,12 +34,11 @@ int main()
 
     if (input_str == NULL || *input_str == '\0')
       continue;
-
+    write(STDOUT_FILENO, input_str, MAX_BUFFER_SIZE - 1);
     if (create_job(&job, input_str) == -1)
       continue;
 
     printf("Left create job\n");
-    print_job(&job, "In main, after creat_job()");
     if (string_compare(job.pipeline[0].argv[0], "exit", 4) == 0)
     {
       free_all(); // Free the input string memory before exiting
@@ -53,11 +52,13 @@ int main()
       free_all(); // Free input string after each command
       continue;
     }
-    printf("!!!!!!");
     run_job(&job);
 
     free_all(); // Free input string after the job is run
+    print_job(&job, "In main, after run_job()");
     reset_job(&job);
+    print_job(&job, "In main, after reset_job()");
+
     // reset_command_struct(&command);
   }
 
@@ -137,7 +138,7 @@ int create_job(Job *job, char input_str[256])
         input_str[i] = '\0';
         space_found = true;
       }
-      else if (input_str[i] == '\n')
+      else if (input_str[i] == '\n' || input_str[i] == '\0')
       {
         job->pipeline[pipeline_index].argv[argv_index] = NULL;
         space_found = false;

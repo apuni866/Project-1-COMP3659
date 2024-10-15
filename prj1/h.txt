@@ -1,0 +1,4 @@
+Executing final command: echo
+copy is: /bin/
+path for execve(): /bin/echo
+"sdfasdfasdfasdfd"

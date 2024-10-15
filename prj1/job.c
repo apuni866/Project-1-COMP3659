@@ -20,31 +20,27 @@ void run_job(Job *job)
   int outfile = 1;
   int infile = 0;
   int stage = 0;
-  /*
-  char curr_dir_path[MAX_BUFFER_SIZE] = "/bin/"; // current directory path.
-  char *const path = job->pipeline[stage].argv[0];
-  strncat(curr_dir_path, path, get_strlen(path) + 1);
-  */
+
   char default_dir_path[MAX_BUFFER_SIZE] = "/bin/";
   char curr_dir_path[MAX_BUFFER_SIZE] = "/bin/"; // current directory path.
   char *path = job->pipeline[stage].argv[0];
   strncat(curr_dir_path, path, get_strlen(path) + 1);
-  // printf("curr_dir_path: %s", curr_dir_path);
   char *const envp[] = {NULL};
 
   if (job->infile_path != NULL)
   {
     infile = open(job->infile_path, O_RDONLY);
-    printf("infile: %s: %d\n", job->infile_path, infile);
-    // dup2(infile, 0);
-    // close(infile);
+    // printf("infile: %s: %d\n", job->infile_path, infile);
+    if (infile == -1)
+    {
+      perror("Error opening infile");
+      return;
+    }
   }
 
   for (; stage < (job->num_stages - 1); stage++)
   {
-    write(1, "loop\n", 6);
     pipe(pipefd);
-    // MIGHT NEED A FLAG HERE?
 
     pid = fork();
 
@@ -62,15 +58,13 @@ void run_job(Job *job)
 
       path = job->pipeline[stage].argv[0];
       strcpy(curr_dir_path, default_dir_path);
-      printf("copy is: %s\n", curr_dir_path);
+      // printf("copy is: %s\n", curr_dir_path);
       strncat(curr_dir_path, path, get_strlen(path) + 1);
-      printf("path for execve(): %s\n", job->pipeline[stage].argv[0]);
-      // execve(job->pipeline[stage].argv[0], job->pipeline[stage].argv, envp);
+      // printf("path for execve(): %s\n", job->pipeline[stage].argv[0]);
+      // printf("Executing command: %s\n", curr_dir_path);
       execve(curr_dir_path, job->pipeline[stage].argv, envp);
-      perror("haha oops! execve in for loop failed");
-      // execve("/bin/less", job->pipeline[stage].argv, envp);
-
-      exit(EXIT_SUCCESS); // safetey exit. replace with error trap instead later.
+      perror("execve in for loop failed");
+      exit(EXIT_FAILURE);
     }
 
     close(pipefd[WRITE_END]);
@@ -78,39 +72,35 @@ void run_job(Job *job)
   }
 
   pid2 = fork();
-  // printf("pid2: %d\n", pid2);
   if (pid2 == 0)
   {
-
     if (job->outfile_path != NULL)
     {
       outfile = open(job->outfile_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-      printf("outfile: %s: %d\n", job->outfile_path, outfile);
+      // printf("outfile: %s: %d\n", job->outfile_path, outfile);
+      if (outfile == -1)
+      {
+        perror("Error opening outfile");
+        return;
+      }
       dup2(outfile, 1);
       close(outfile);
     }
 
     if (infile != 0)
       dup2(infile, 0);
-    if (outfile != 1)
-    {
-      // dup2(pipefd[READ_END],0);
-    }
 
-    printf("This is the string insdie of run_job: %s\n", job->pipeline[stage].argv[0]);
-
-    // execve("/bin/ls", job->pipeline[stage].argv, envp);
-    //  ^^^ THIS WORKS!!
-
+    // printf("Executing final command: %s\n", job->pipeline[stage].argv[0]);
     path = job->pipeline[stage].argv[0];
     strcpy(curr_dir_path, default_dir_path);
-    printf("copy is: %s\n", curr_dir_path);
+    // printf("copy is: %s\n", curr_dir_path);
     strncat(curr_dir_path, path, get_strlen(path) + 1);
-    printf("path for execve(): %s\n", curr_dir_path);
+    // printf("path for execve(): %s\n", curr_dir_path);
     execve(curr_dir_path, job->pipeline[stage].argv, envp);
-    perror("haha oops! execve failed: ");
-    exit(EXIT_SUCCESS);
+    perror("execve failed");
+    exit(EXIT_FAILURE);
   }
+
   if (job->num_stages > 1)
   {
     close(pipefd[WRITE_END]);
@@ -128,22 +118,13 @@ void reset_job(Job *job)
   job->infile_path = NULL;
   job->outfile_path = NULL;
   job->background = false;
+  job->num_stages = 1; // Reset num_stages to its initial value
   int i;
 
   for (i = 0; i < job->num_stages; i++)
   {
     reset_command_struct(&job->pipeline[i]);
   }
-  job->num_stages = 1;
-  /*
-    job =
-        {
-            {{{NULL}, 0}},
-            1,
-            NULL,
-            NULL,
-            0};
-            */
 }
 
 void open_output_file(Job *job, Command *command)
@@ -158,7 +139,7 @@ void open_output_file(Job *job, Command *command)
 
 void print_argv(Command *command, char *message)
 {
-#if 1
+#if 0
   int temp_out_fd = command->output_fd;
   command->output_fd = STDOUT_FILENO;
   printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ARGUMENT VECTOR DEBUG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
@@ -191,7 +172,7 @@ void print_argv(Command *command, char *message)
 }
 void print_job(Job *job, char *message)
 {
-#if 1
+#if 0
   printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ JOB DEBUG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
   printf("Location:           %s\n", message);
 

@@ -18,11 +18,10 @@ char *get_command()
 {
   char *buffer = alloc(MAX_BUFFER_SIZE + 1); // Allocate memory for the input buffer
   int bytesRead;
-
   write(STDOUT_FILENO, PROMPT_SYMBOL, PROMPT_SYMBOL_SIZE);
 
   bytesRead = read(STDIN_FILENO, buffer, MAX_BUFFER_SIZE - 1); // Leave space for null terminator
-  printf("%d", errno);
+  // printf("%d", errno);
   if (bytesRead < 0)
   {
     printf("This should never happen, because just think about it\n");
@@ -44,11 +43,11 @@ char *get_command()
 
   buffer[bytesRead - 1] = '\0'; // Null-terminate the string (removing newline)
 
-  printf("This is the string in the buffer: %s\n", buffer);
-  // int i = 0;
-  // while (buffer[i] != '\0')
-  //   i++;
-  // printf("Null terminator encountered \n");
+  // printf("This is the string in the buffer: %s\n", buffer);
+  //  int i = 0;
+  //  while (buffer[i] != '\0')
+  //    i++;
+  //  printf("Null terminator encountered \n");
 
   return buffer;
 }
