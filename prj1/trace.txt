@@ -1,0 +1,34 @@
+main():
+    input_str = ['l','s','\0']
+
+create_job():
+job =       {
+          {{{ls}, 1}},
+          1,
+          NULL,
+          NULL,
+          0};
+    input_str = ['l','s','\0']    
+    pipeline_index = 0
+    int argv_index = 1;
+    bool space_found = false;
+    bool pipeline_done = false;
+    char sp_char;
+
+run_job():
+job =       {
+          {{{ls}, 1}},
+          1,
+          NULL,
+          NULL,
+          0};
+            int pipefd[2] = {1, 0};
+  int child_status;
+  int pid, pid2;
+
+  int outfile = 1;
+  int infile = 0;
+  int stage = 0;
+  char curr_dir_path[MAX_BUFFER_SIZE] = "/bin/"; // current directory path.
+  char *const envp[] = {NULL};
+  pid2 != 0
