@@ -9,10 +9,10 @@
 #include "job.h"
 #include "parse.h"
 
-void add_argument_to_pipeline(Job *job, int pipeline_index, int *argv_index, char *input_str, int pos);
-void start_new_pipeline_stage(Job *job, int *pipeline_index, int *argv_index, char *input_str, int *pos);
-void handle_special_char(Job *job, char *input_str, int pos, char *sp_char, bool *pipeline_done);
-void set_input_output_paths(Job *job, char *input_str, int *pos, char sp_char);
+// void add_argument_to_pipeline(Job *job, int pipeline_index, int *argv_index, char *input_str, int pos);
+// void start_new_pipeline_stage(Job *job, int *pipeline_index, int *argv_index, char *input_str, int *pos);
+// void handle_special_char(Job *job, char *input_str, int pos, char *sp_char, bool *pipeline_done);
+// void set_input_output_paths(Job *job, char *input_str, int *pos, char sp_char);
 int create_job(Job *job, char input_str[MAX_BUFFER_SIZE]);
 
 int main()
@@ -27,15 +27,13 @@ int main()
           0};
 
   reset_command_struct(&command);
-  // job.infile_path = NULL;
-  // job.outfile_path = NULL;
 
   while (true)
   {
     char *input_str = get_command();
 
     if (input_str == NULL || *input_str == '\0')
-      continue; // If there was an error or EOF, exit the loop
+      continue;
 
     if (create_job(&job, input_str) == -1)
       continue;
@@ -65,63 +63,7 @@ int main()
 
   return 0;
 }
-void add_argument_to_pipeline(Job *job, int pipeline_index, int *argv_index, char *input_str, int pos)
-{
-  job->pipeline[pipeline_index].argv[*argv_index] = &input_str[pos];
-  job->pipeline[pipeline_index].argc++;
-  (*argv_index)++;
-}
 
-void start_new_pipeline_stage(Job *job, int *pipeline_index, int *argv_index, char *input_str, int *pos)
-{
-  input_str[*pos] = '\0';
-  (*pipeline_index)++;
-  *argv_index = 0;
-  job->num_stages++;
-
-  // Skip over spaces
-  do
-  {
-    (*pos)++;
-  } while (input_str[*pos] == ' ');
-
-  job->pipeline[*pipeline_index].argv[*argv_index] = &input_str[*pos];
-  job->pipeline[*pipeline_index].argc = 1;
-  (*argv_index)++;
-}
-
-void handle_special_char(Job *job, char *input_str, int pos, char *sp_char, bool *pipeline_done)
-{
-  *sp_char = input_str[pos];
-  input_str[pos] = '\0';
-  *pipeline_done = true;
-  job->pipeline[job->num_stages - 1].argv[job->pipeline[job->num_stages - 1].argc] = NULL; // Terminate current pipeline stage
-}
-
-void set_input_output_paths(Job *job, char *input_str, int *pos, char sp_char)
-{
-  if (sp_char == IO_IN || input_str[*pos] == IO_IN)
-  {
-    for (; input_str[*pos] == ' ' || input_str[*pos] == IO_IN; (*pos)++)
-    {
-      input_str[*pos] = '\0';
-    }
-    job->infile_path = &input_str[*pos];
-  }
-  else if (sp_char == IO_OUT || input_str[*pos] == IO_OUT)
-  {
-    for (; input_str[*pos] == ' ' || input_str[*pos] == IO_OUT; (*pos)++)
-    {
-      input_str[*pos] = '\0';
-    }
-    job->outfile_path = &input_str[*pos];
-  }
-  else if (sp_char == '&')
-  {
-    input_str[*pos] = '\0';
-    job->background = true;
-  }
-}
 int create_job(Job *job, char input_str[256])
 {
   int len = get_strlen(input_str);
@@ -232,6 +174,63 @@ int create_job(Job *job, char input_str[256])
   return 0;
 }
 #if 0
+void add_argument_to_pipeline(Job *job, int pipeline_index, int *argv_index, char *input_str, int pos)
+{
+  job->pipeline[pipeline_index].argv[*argv_index] = &input_str[pos];
+  job->pipeline[pipeline_index].argc++;
+  (*argv_index)++;
+}
+
+void start_new_pipeline_stage(Job *job, int *pipeline_index, int *argv_index, char *input_str, int *pos)
+{
+  input_str[*pos] = '\0';
+  (*pipeline_index)++;
+  *argv_index = 0;
+  job->num_stages++;
+
+  // Skip over spaces
+  do
+  {
+    (*pos)++;
+  } while (input_str[*pos] == ' ');
+
+  job->pipeline[*pipeline_index].argv[*argv_index] = &input_str[*pos];
+  job->pipeline[*pipeline_index].argc = 1;
+  (*argv_index)++;
+}
+
+void handle_special_char(Job *job, char *input_str, int pos, char *sp_char, bool *pipeline_done)
+{
+  *sp_char = input_str[pos];
+  input_str[pos] = '\0';
+  *pipeline_done = true;
+  job->pipeline[job->num_stages - 1].argv[job->pipeline[job->num_stages - 1].argc] = NULL; // Terminate current pipeline stage
+}
+
+void set_input_output_paths(Job *job, char *input_str, int *pos, char sp_char)
+{
+  if (sp_char == IO_IN || input_str[*pos] == IO_IN)
+  {
+    for (; input_str[*pos] == ' ' || input_str[*pos] == IO_IN; (*pos)++)
+    {
+      input_str[*pos] = '\0';
+    }
+    job->infile_path = &input_str[*pos];
+  }
+  else if (sp_char == IO_OUT || input_str[*pos] == IO_OUT)
+  {
+    for (; input_str[*pos] == ' ' || input_str[*pos] == IO_OUT; (*pos)++)
+    {
+      input_str[*pos] = '\0';
+    }
+    job->outfile_path = &input_str[*pos];
+  }
+  else if (sp_char == '&')
+  {
+    input_str[*pos] = '\0';
+    job->background = true;
+  }
+}
 void create_job(Job *job, char input_str[MAX_BUFFER_SIZE])
 {
   int pipeline_index = 0;

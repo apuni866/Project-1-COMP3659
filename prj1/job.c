@@ -126,6 +126,7 @@ void reset_job(Job *job)
 
   job->infile_path = NULL;
   job->outfile_path = NULL;
+  job->background = false;
   int i;
 
   for (i = 0; i < job->num_stages; i++)
