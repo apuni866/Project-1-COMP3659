@@ -1,4 +1,0 @@
-This is the string insdie of run_job: echo
-copy is: /bin/
-path for execve(): /bin/echo
-"hi"

@@ -13,7 +13,7 @@ void add_argument_to_pipeline(Job *job, int pipeline_index, int *argv_index, cha
 void start_new_pipeline_stage(Job *job, int *pipeline_index, int *argv_index, char *input_str, int *pos);
 void handle_special_char(Job *job, char *input_str, int pos, char *sp_char, bool *pipeline_done);
 void set_input_output_paths(Job *job, char *input_str, int *pos, char sp_char);
-void create_job(Job *job, char input_str[MAX_BUFFER_SIZE]);
+int create_job(Job *job, char input_str[MAX_BUFFER_SIZE]);
 
 int main()
 {
@@ -34,15 +34,14 @@ int main()
   {
     char *input_str = get_command();
 
-    if (input_str == NULL)
-    {
-      break; // If there was an error or EOF, exit the loop
-    }
+    if (input_str == NULL || *input_str == '\0')
+      continue; // If there was an error or EOF, exit the loop
 
-    create_job(&job, input_str);
+    if (create_job(&job, input_str) == -1)
+      continue;
+
     printf("Left create job\n");
-    print_argv(&job.pipeline[0], "After create_job");
-
+    print_job(&job, "In main, after creat_job()");
     if (string_compare(job.pipeline[0].argv[0], "exit", 4) == 0)
     {
       free_all(); // Free the input string memory before exiting
@@ -56,7 +55,7 @@ int main()
       free_all(); // Free input string after each command
       continue;
     }
-
+    printf("!!!!!!");
     run_job(&job);
 
     free_all(); // Free input string after the job is run
@@ -123,7 +122,7 @@ void set_input_output_paths(Job *job, char *input_str, int *pos, char sp_char)
     job->background = true;
   }
 }
-void create_job(Job *job, char input_str[256])
+int create_job(Job *job, char input_str[256])
 {
   int len = get_strlen(input_str);
   int pipeline_index = 0;
@@ -131,14 +130,25 @@ void create_job(Job *job, char input_str[256])
   bool space_found = false;
   bool pipeline_done = false;
   char sp_char;
+  int i = 0;
   // printf("%d\n", len);
 
+  while (input_str[i] == ' ' && i < MAX_BUFFER_SIZE)
+  {
+    printf("i: %d\n", i);
+    i++;
+  }
+  if (input_str[i] == '\0' || input_str[i] == '\n')
+  {
+    printf("input_str is null, but thats bad :(\n");
+    return -1;
+  }
   job->pipeline[pipeline_index].argv[argv_index] = &input_str[0];
   job->pipeline[pipeline_index].argc = 1;
   argv_index++;
 
   job->num_stages = 1;
-  for (int i = 0; i < MAX_BUFFER_SIZE; i++)
+  for (; i < MAX_BUFFER_SIZE; i++)
   {
     if (!pipeline_done)
     {
@@ -219,7 +229,7 @@ void create_job(Job *job, char input_str[256])
         input_str[i] = '\0';
     }
   }
-  return;
+  return 0;
 }
 #if 0
 void create_job(Job *job, char input_str[MAX_BUFFER_SIZE])

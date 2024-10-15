@@ -36,8 +36,8 @@ void run_job(Job *job)
   {
     infile = open(job->infile_path, O_RDONLY);
     printf("infile: %s: %d\n", job->infile_path, infile);
-    dup2(infile, 0);
-    close(infile);
+    // dup2(infile, 0);
+    // close(infile);
   }
 
   for (; stage < (job->num_stages - 1); stage++)
@@ -187,6 +187,45 @@ void print_argv(Command *command, char *message)
   command->output_fd = temp_out_fd;
 #endif
 }
+void print_job(Job *job, char *message)
+{
+#if 1
+  printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ JOB DEBUG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+  printf("Location:           %s\n", message);
+
+  printf("Job has %d stage(s)\n", job->num_stages);
+  printf("Input file:         %s\n", job->infile_path ? job->infile_path : "None");
+  printf("Output file:        %s\n", job->outfile_path ? job->outfile_path : "None");
+  printf("Background:         %s\n", job->background ? "Yes" : "No");
+
+  for (unsigned int i = 0; i < job->num_stages; i++)
+  {
+    Command *command = &job->pipeline[i];
+    printf("\n--- Stage %d ---\n", i + 1);
+    printf("Command Arguments:  (argc = %d):\n", command->argc);
+    for (unsigned int j = 0; j < command->argc; j++)
+    {
+      if (command->argv[j] != NULL)
+      {
+        printf("argv[%d]:            %s\n", j, command->argv[j]);
+      }
+      else
+      {
+        printf("argv[%d]:            NULL\n", j);
+      }
+    }
+
+    // Print the last NULL pointer in argv
+    if (command->argv[command->argc] == NULL)
+    {
+      printf("argv[%d]:            NULL\n", command->argc);
+    }
+  }
+
+  printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ END DEBUG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
+#endif
+}
+
 void initialize_job(Job *job)
 {
   /*

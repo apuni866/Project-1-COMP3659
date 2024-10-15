@@ -27,6 +27,7 @@ void reset_job(Job *job);
 void open_output_file(Job *job, Command *command);
 
 void print_argv(Command *command, char *message);
+void print_job(Job *job, char *message);
 void printArray(char *arr[], size_t size);
 
 #endif

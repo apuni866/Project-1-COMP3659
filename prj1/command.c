@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/wait.h>
+#include <errno.h>
 
 #include "custom_string.h"
 #include "constants.h"
@@ -21,13 +22,21 @@ char *get_command()
   write(STDOUT_FILENO, PROMPT_SYMBOL, PROMPT_SYMBOL_SIZE);
 
   bytesRead = read(STDIN_FILENO, buffer, MAX_BUFFER_SIZE - 1); // Leave space for null terminator
-
-  if (bytesRead == 0)
+  printf("%d", errno);
+  if (bytesRead < 0)
   {
     printf("This should never happen, because just think about it\n");
     free_all();  // Clean up the buffer
     return NULL; // Return NULL in case of error
   }
+
+  else if (bytesRead == 0)
+  {
+    // read returned EOF
+    free_all();
+    return '\0';
+  }
+
   else if (bytesRead >= MAX_BUFFER_SIZE - 1)
   {
     flush(); // Clear the buffer if too large
@@ -111,8 +120,8 @@ int run_command(Command *command, int input_fd, int output_fd)
 void reset_command_struct(Command *command)
 {
   command->argc = 0;
-  command->input_fd = -1;
-  command->output_fd = -1;
+  // command->input_fd = -1;
+  // command->output_fd = -1;
   free_all();
   // flush();
 
