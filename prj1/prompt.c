@@ -14,6 +14,7 @@ void start_new_pipeline_stage(Job *job, int *pipeline_index, int *argv_index, ch
 void handle_special_char(Job *job, char *input_str, int pos, char *sp_char, bool *pipeline_done);
 void set_input_output_paths(Job *job, char *input_str, int *pos, char sp_char);
 void create_job(Job *job, char input_str[MAX_BUFFER_SIZE]);
+
 int main()
 {
   Command command;
@@ -134,6 +135,7 @@ void create_job(Job *job, char input_str[MAX_BUFFER_SIZE])
   argv_index++;
 
   job->num_stages = 1;
+  
   // -1 ??
   for (int i = 0; i < MAX_BUFFER_SIZE ; i++)
   {
@@ -165,8 +167,8 @@ void create_job(Job *job, char input_str[MAX_BUFFER_SIZE])
         input_str[i] = '\0';
         break;
       }
-      else if (input_str[i] == '\0')
-        printf("INside of else if input_str == null termionator \n");
+      // else if (input_str[i] == '\0')
+      //   printf("INside of else if input_str == null termionator \n");
     }
     else
     {

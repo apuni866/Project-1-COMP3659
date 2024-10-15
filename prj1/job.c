@@ -138,9 +138,9 @@ void run_job(Job * job)
   int infile = 0;
   int stage = 0;
   
-  char *const path = job->pipeline[stage].argv[0];
-  char curr_dir_path[MAX_BUFFER_SIZE] = "/bin/";      //current directory path.
-  strncat(curr_dir_path, path, get_strlen(path) + 1);
+  // char *const path = job->pipeline[stage].argv[0];
+  // char curr_dir_path[MAX_BUFFER_SIZE] = "/bin/";      //current directory path.
+  // strncat(curr_dir_path, path, get_strlen(path) + 1);
 
    
   if(job->infile_path != NULL){
