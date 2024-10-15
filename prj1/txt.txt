@@ -1,16 +1,1 @@
-/usr/bin/grops
-/usr/bin/groups
-/usr/bin/jdeps
-/usr/bin/jps
-/usr/bin/mapscrn
-/usr/bin/mpstat
-/usr/bin/ps
-/usr/bin/psfaddtable
-/usr/bin/psfgettable
-/usr/bin/psfstriptable
-/usr/bin/psfxtable
-/usr/bin/pslog
-/usr/bin/pstree
-/usr/bin/pstree.x11
-/usr/bin/scandeps
-/usr/bin/uclampset
+      1       3      24

@@ -27,10 +27,10 @@ void run_job(Job * job)
   
    
   if(job->infile_path != NULL){
-    infile = open(job->infile_path,O_RDONLY);
+    infile = open(job->infile_path,O_RDONLY,0644);
     printf("infile: %s: %d\n",job->infile_path, infile);
-    dup2(infile,0);
-    close(infile);
+    //    dup2(infile,0);
+    //close(infile);
   }
   
   for(;stage < (job->num_stages-1);stage++){
@@ -50,7 +50,7 @@ void run_job(Job * job)
       close(pipefd[WRITE_END]);
       
       execve(job->pipeline[stage].argv[0],job->pipeline[stage].argv,envp);
-      
+      perror("pipe loop did not run");      
       exit(EXIT_SUCCESS);//safetey exit. replace with error trap instead later.
       
     }
@@ -77,6 +77,8 @@ void run_job(Job * job)
       }
 	
     execve(job->pipeline[stage].argv[0],job->pipeline[stage].argv,envp);
+    perror("pipe loop did not run");      
+
   }
   close(pipefd[WRITE_END]);
   
