@@ -1,4 +1,4 @@
-#ifndef JOB_H
+fg#ifndef JOB_H
 #define JOB_H
 
 #include "command.h"
@@ -10,7 +10,7 @@
 // first command store in job.pipline[0]
 // seconds commands store in job.pipeline[1]
 // 
-#define MAX_PIPELINE_LEN 10
+#define MAX_PIPELINE_LEN 100
 
 
 typedef struct
