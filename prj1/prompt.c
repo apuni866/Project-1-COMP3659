@@ -35,7 +35,7 @@ int main()
     }
 
     create_job(&job, input_str);
-
+    printf("Left create job\n");
     print_argv(&command, "After create_job");
 
     if (string_compare(job.pipeline[0].argv[0], "exit", 4) == 0)
@@ -128,11 +128,14 @@ void create_job(Job *job, char input_str[MAX_BUFFER_SIZE])
   char sp_char;
 
   job->pipeline[pipeline_index].argv[argv_index] = &input_str[0];
+  //printf("This is the string insdie of the job->pipe: %s\n", job->pipeline[pipeline_index].argv[argv_index]);
+
   job->pipeline[pipeline_index].argc = 1;
   argv_index++;
 
   job->num_stages = 1;
-  for (int i = 0; i < MAX_BUFFER_SIZE; i++)
+  // -1 ??
+  for (int i = 0; i < MAX_BUFFER_SIZE ; i++)
   {
     if (!pipeline_done)
     {
@@ -162,6 +165,8 @@ void create_job(Job *job, char input_str[MAX_BUFFER_SIZE])
         input_str[i] = '\0';
         break;
       }
+      else if (input_str[i] == '\0')
+        printf("INside of else if input_str == null termionator \n");
     }
     else
     {

@@ -11,6 +11,7 @@
 #include "memory.h"
 #include "job.h"
 
+#if 0
 void allocate_jobs(Job *job, Command *command)
 {
   if (job->num_stages > 1)
@@ -124,6 +125,89 @@ void run_job(Job *job)
 
   reset_job(job);
 }
+#endif
+
+void run_job(Job * job)
+{
+  int pipefd[2] ={1,0};
+  int child_status;
+  int pid,pid2;
+  char* const envp[] = {NULL};
+  
+  int outfile = 1;
+  int infile = 0;
+  int stage = 0;
+  
+  char *const path = job->pipeline[stage].argv[0];
+  char curr_dir_path[MAX_BUFFER_SIZE] = "/bin/";      //current directory path.
+  strncat(curr_dir_path, path, get_strlen(path) + 1);
+
+   
+  if(job->infile_path != NULL){
+    infile = open(job->infile_path,O_RDONLY);
+    printf("infile: %s: %d\n",job->infile_path, infile);
+    dup2(infile,0);
+    close(infile);
+  }
+  
+  for(;stage < (job->num_stages-1); stage++){
+    write(1, "loop\n", 6);
+    pipe(pipefd);
+    
+    pid = fork();
+    
+    if (pid == 0){
+      if (infile !=0){
+	dup2(infile,0);
+	close(infile);
+      }
+      
+      close(pipefd[READ_END]);
+      dup2(pipefd[WRITE_END],1);
+      close(pipefd[WRITE_END]);
+      
+      execve(job->pipeline[stage].argv[0],job->pipeline[stage].argv,envp);
+      
+      exit(EXIT_SUCCESS);//safetey exit. replace with error trap instead later.
+      
+    }
+    
+    close(pipefd[WRITE_END]);
+    infile = pipefd[READ_END];
+  }
+  
+  
+  pid2 = fork();
+  if(pid2 == 0)
+  {  
+     
+    if(job->outfile_path != NULL){
+      outfile = open(job->outfile_path,O_WRONLY | O_CREAT|O_TRUNC,0644);
+      printf("outfile: %s: %d\n",job->outfile_path, outfile);
+      dup2(outfile,1);
+      close(outfile);
+    }
+    
+    if (infile != 0)
+      dup2(infile,0);
+    if (outfile != 1){
+	//dup2(pipefd[READ_END],0);
+      }
+  
+    printf("This is the string insdie of run_job: %s\n", job->pipeline[stage].argv[0]);
+
+    execve(job->pipeline[stage].argv[0],job->pipeline[stage].argv,envp);
+  }
+  close(pipefd[WRITE_END]);
+  
+  close(pipefd[READ_END]);
+  if(!job->background)
+    waitpid(pid2,&child_status,0);
+  else
+    printf("hey its a backgroundjob");
+      
+}
+
 void reset_job(Job *job)
 {
   job->infile_path = NULL;

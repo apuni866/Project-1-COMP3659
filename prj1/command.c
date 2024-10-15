@@ -35,7 +35,13 @@ char *get_command()
 
   buffer[bytesRead - 1] = '\0'; // Null-terminate the string (removing newline)
 
-  return buffer; // Return the command input string
+  printf("This is the string in the buffer: %s\n",buffer);
+  // int i = 0;
+  // while (buffer[i] != '\0')
+  //   i++;
+  // printf("Null terminator encountered \n");
+
+  return buffer;
 }
 
 int run_command(Command *command, int input_fd, int output_fd)
