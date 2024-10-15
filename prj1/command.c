@@ -13,36 +13,29 @@
 
 #include <string.h>
 
-void get_command(Command *command)
+char *get_command()
 {
+  char *buffer = alloc(MAX_BUFFER_SIZE + 1); // Allocate memory for the input buffer
   int bytesRead;
-  int index = 0;
-  char *buffer = alloc(MAX_BUFFER_SIZE + 1);
 
-  write(STDOUT_FILENO, PROMPT_SYMBOL, PROMPT_SYMBOL_SIZE); // CMD line Symbol
+  write(STDOUT_FILENO, PROMPT_SYMBOL, PROMPT_SYMBOL_SIZE);
 
-  // Read command line
   bytesRead = read(STDIN_FILENO, buffer, MAX_BUFFER_SIZE - 1); // Leave space for null terminator
 
-  if (bytesRead <= 0)
+  if (bytesRead == 0)
   {
-    // This should never happen because just think about it
-    printf("This should never happen because just think about it");
-    printf("%d\n", bytesRead);
-    command->argv[0] = NULL;
-    return;
+    printf("This should never happen, because just think about it\n");
+    free_all();  // Clean up the buffer
+    return NULL; // Return NULL in case of error
   }
-
   else if (bytesRead >= MAX_BUFFER_SIZE - 1)
   {
-    flush();
+    flush(); // Clear the buffer if too large
   }
 
-  buffer[bytesRead - 1] = '\0'; // Null terminate here as within the 'parse' func'n a null check is done for this buffer
+  buffer[bytesRead - 1] = '\0'; // Null-terminate the string (removing newline)
 
-  tokenizer(buffer, command);
-
-  return;
+  return buffer; // Return the command input string
 }
 
 int run_command(Command *command, int input_fd, int output_fd)
