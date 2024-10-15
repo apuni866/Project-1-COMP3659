@@ -1,28 +1,35 @@
 main():
-    input_str = ['l','s','\0']
+    input_str = ['l','s', '\0', '|', ' ', 'l', 'e', 's', 's', \0']
 
 create_job():
-job =       {
-          {{{ls}, 1}},
-          1,
+job =             {
+          {{{ls | less}, 1}, {{less}, 1}},
+          2,
           NULL,
           NULL,
           0};
     input_str = ['l','s','\0']    
-    pipeline_index = 0
+    pipeline_index = 1
     int argv_index = 1;
     bool space_found = false;
     bool pipeline_done = false;
     char sp_char;
+    i=9
 
-run_job():
-job =       {
-          {{{ls}, 1}},
-          1,
+start_new_pipeline_stage:
+    {
+          {{{ls | less }, 1}},
+          2,
           NULL,
           NULL,
           0};
-            int pipefd[2] = {1, 0};
+    &pipeline_index = 1
+    int &argv_index = 1;
+    input_str = ['l','s', '\0', '\0', ' ', 'l', 'e', 's', 's', \0']
+    &pos = 5
+
+run_job():
+  int pipefd[2] = {1, 0};
   int child_status;
   int pid, pid2;
 
@@ -30,5 +37,18 @@ job =       {
   int infile = 0;
   int stage = 0;
   char curr_dir_path[MAX_BUFFER_SIZE] = "/bin/"; // current directory path.
+  char *const path = job->pipeline[stage].argv[0];
+  strncat(curr_dir_path, path, get_strlen(path) + 1);
+  printf("curr_dir_path: %s", curr_dir_path);
   char *const envp[] = {NULL};
-  pid2 != 0
+  job =             {
+          {{{ls | less}, 1}, {{less}, 1}},
+          2,
+          NULL,
+          NULL,
+          0};
+
+~~~~~~ child process
+pid = 0
+
+~~~~~~~parent process

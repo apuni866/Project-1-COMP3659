@@ -60,8 +60,9 @@ int main()
 
     run_job(&job);
 
-    reset_command_struct(&command);
     free_all(); // Free input string after the job is run
+    reset_job(&job);
+    // reset_command_struct(&command);
   }
 
   return 0;

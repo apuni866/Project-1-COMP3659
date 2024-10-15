@@ -35,7 +35,7 @@ char *get_command()
 
   buffer[bytesRead - 1] = '\0'; // Null-terminate the string (removing newline)
 
-  printf("This is the string in the buffer: %s\n",buffer);
+  printf("This is the string in the buffer: %s\n", buffer);
   // int i = 0;
   // while (buffer[i] != '\0')
   //   i++;

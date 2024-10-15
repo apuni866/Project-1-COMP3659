@@ -136,10 +136,16 @@ void run_job(Job *job)
   int outfile = 1;
   int infile = 0;
   int stage = 0;
+  /*
   char curr_dir_path[MAX_BUFFER_SIZE] = "/bin/"; // current directory path.
   char *const path = job->pipeline[stage].argv[0];
   strncat(curr_dir_path, path, get_strlen(path) + 1);
-  printf("curr_dir_path: %s", curr_dir_path);
+  */
+  char default_dir_path[MAX_BUFFER_SIZE] = "/bin/";
+  char curr_dir_path[MAX_BUFFER_SIZE] = "/bin/"; // current directory path.
+  char *path = job->pipeline[stage].argv[0];
+  strncat(curr_dir_path, path, get_strlen(path) + 1);
+  // printf("curr_dir_path: %s", curr_dir_path);
   char *const envp[] = {NULL};
 
   if (job->infile_path != NULL)
@@ -154,6 +160,7 @@ void run_job(Job *job)
   {
     write(1, "loop\n", 6);
     pipe(pipefd);
+    // MIGHT NEED A FLAG HERE?
 
     pid = fork();
 
@@ -169,7 +176,13 @@ void run_job(Job *job)
       dup2(pipefd[WRITE_END], 1);
       close(pipefd[WRITE_END]);
 
+      path = job->pipeline[stage].argv[0];
+      strcpy(curr_dir_path, default_dir_path);
+      printf("copy is: %s\n", curr_dir_path);
+      strncat(curr_dir_path, path, get_strlen(path) + 1);
+      printf("path for execve(): %s\n", job->pipeline[stage].argv[0]);
       execve(job->pipeline[stage].argv[0], job->pipeline[stage].argv, envp);
+      // execve("/bin/less", job->pipeline[stage].argv, envp);
 
       exit(EXIT_SUCCESS); // safetey exit. replace with error trap instead later.
     }
@@ -179,7 +192,7 @@ void run_job(Job *job)
   }
 
   pid2 = fork();
-  printf("pid2: %d\n", pid2);
+  // printf("pid2: %d\n", pid2);
   if (pid2 == 0)
   {
 
@@ -202,7 +215,14 @@ void run_job(Job *job)
 
     // execve("/bin/ls", job->pipeline[stage].argv, envp);
     //  ^^^ THIS WORKS!!
+
+    path = job->pipeline[stage].argv[0];
+    strcpy(curr_dir_path, default_dir_path);
+    printf("copy is: %s\n", curr_dir_path);
+    strncat(curr_dir_path, path, get_strlen(path) + 1);
+    printf("path for execve(): %s\n", curr_dir_path);
     execve(curr_dir_path, job->pipeline[stage].argv, envp);
+    exit(EXIT_SUCCESS);
   }
   if (job->num_stages > 1)
   {
@@ -222,7 +242,7 @@ void reset_job(Job *job)
   job->outfile_path = NULL;
   int i;
 
-  for (i = 0; i < job->num_stages; i++)
+  for (i = 0; i < job->num_stages + 1; i++)
   {
     reset_command_struct(&job->pipeline[i]);
   }
