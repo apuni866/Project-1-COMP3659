@@ -65,7 +65,8 @@ void run_job(Job *job)
       printf("copy is: %s\n", curr_dir_path);
       strncat(curr_dir_path, path, get_strlen(path) + 1);
       printf("path for execve(): %s\n", job->pipeline[stage].argv[0]);
-      execve(job->pipeline[stage].argv[0], job->pipeline[stage].argv, envp);
+      // execve(job->pipeline[stage].argv[0], job->pipeline[stage].argv, envp);
+      execve(curr_dir_path, job->pipeline[stage].argv, envp);
       perror("haha oops! execve in for loop failed");
       // execve("/bin/less", job->pipeline[stage].argv, envp);
 
