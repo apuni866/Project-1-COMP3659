@@ -1,7 +1,9 @@
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
+
+#include <stdio.h> //remove
+#include <stdlib.h> //remove
+
 #include <sys/wait.h>
 #include <errno.h>
 
@@ -9,10 +11,9 @@
 #include "constants.h"
 #include "command.h"
 #include "memory.h"
-
 #include "parse.h"
 
-#include <string.h>
+#include <string.h> //remove
 
 char *get_command()
 {
@@ -24,7 +25,7 @@ char *get_command()
   // printf("%d", errno);
   if (bytesRead < 0)
   {
-    printf("This should never happen.\n");
+    //printf("This should never happen.\n");
     free_all();  // Clean up the buffer
     return NULL; // Return NULL in case of error
   }

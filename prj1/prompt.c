@@ -1,6 +1,9 @@
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdio.h>
+
+#include <stdio.h> //remove
+#include <errno.h> //remove
+
 #include <signal.h>
 #include <bits/sigaction.h>
 
@@ -18,9 +21,15 @@
 // void start_new_pipeline_stage(Job *job, int *pipeline_index, int *argv_index, char *input_str, int *pos);
 // void handle_special_char(Job *job, char *input_str, int pos, char *sp_char, bool *pipeline_done);
 // void set_input_output_paths(Job *job, char *input_str, int *pos, char sp_char);
+
 int create_job(Job *job, char input_str[MAX_BUFFER_SIZE]);
+void add_to_history(const char *input_str);
+void log_message(const char *message);
 
 struct sigaction sig;
+char *command_history[MAX_LOG_SIZE +1];
+int history_count = 0;
+
 
 
 
@@ -36,8 +45,10 @@ int main()
           0};
 
   sig.sa_handler = &handle_sigint;
-  sig.sa_flags = SA_RESTART;
-  sigaction(SIGTSTP, &sig,NULL);
+  sig.sa_flags = 0;
+  sigaction(SIGINT, &sig ,NULL);
+  
+  //add sigaction for quit
 
 
   reset_command_struct(&command);
@@ -48,6 +59,8 @@ int main()
 
     if (input_str == NULL || *input_str == '\0')
       continue;
+
+    //add_to_history(input_str);
 
     if (create_job(&job, input_str) == -1)
       continue;
@@ -65,6 +78,15 @@ int main()
       free_all(); // Free input string after each command
       continue;
     }
+
+    if (string_compare(job.pipeline[0].argv[0], UP_ARROW, UP_ARROW_SIZE) == 0)
+    {
+      char *temp = command_history[history_count-1];
+      write(STDOUT_FILENO, temp, get_strlen(temp) );
+      continue;
+
+    }
+
     run_job(&job);
 
     free_all(); // Free input string after the job is run
@@ -186,6 +208,24 @@ int create_job(Job *job, char input_str[256])
   }
   return 0;
 }
+
+//call from handler
+void log_message(const char *message)
+{
+
+}
+void add_to_history(const char *input_str)
+{
+  printf("insode of add to hostiyr\n");
+  if (history_count < MAX_LOG_SIZE )
+    strncat(command_history[history_count], input_str, get_strlen(input_str));
+    
+    history_count++;
+
+  printf("leaving add to hostiyr\n");
+
+}
+
 #if 0
 void add_argument_to_pipeline(Job *job, int pipeline_index, int *argv_index, char *input_str, int pos)
 {

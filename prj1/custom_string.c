@@ -44,7 +44,8 @@ char *strcpy(char *destination, const char *source)
   int i;
 
   for (i = 0; source[i] != '\0'; i++)
-  {
+  { 
+    printf("%c",source[i]);
     destination[i] = source[i];
   }
 

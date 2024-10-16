@@ -8,6 +8,9 @@ command.h~
 command.o
 constants.h
 constants.h~
+custom_signals.c
+custom_signals.h
+custom_signals.o
 custom_string.c
 custom_string.c~
 custom_string.h
