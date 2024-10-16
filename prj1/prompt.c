@@ -10,6 +10,7 @@
 #include "parse.h"
 
 int create_job(Job *job, char input_str[MAX_BUFFER_SIZE]);
+void write_welcome_message();
 
 int main()
 {
@@ -23,13 +24,14 @@ int main()
 
   reset_command_struct(&command);
 
+  write_welcome_message();
   while (true)
   {
     char *input_str = get_command();
 
     if (input_str == NULL || *input_str == '\0')
       continue;
-    write(STDOUT_FILENO, input_str, MAX_BUFFER_SIZE - 1);
+
     if (create_job(&job, input_str) == -1)
       continue;
 
@@ -43,23 +45,25 @@ int main()
     {
       write(STDOUT_FILENO, "\033[H\033[J", 7);
       reset_command_struct(&command);
-      free_all(); // Free input string after each command
+      free_all();
       continue;
     }
     run_job(&job);
 
-    free_all(); // Free input string after the job is run
-    print_job(&job, "In main, after run_job()");
+    free_all();
     reset_job(&job);
-    print_job(&job, "In main, after reset_job()");
-
-    // reset_command_struct(&command);
   }
-
   return 0;
 }
-
-int create_job(Job *job, char input_str[256])
+/*****************************************************************
+ * @brief Parses the input string and populates an empty job struct
+ *        accordingly.
+ *
+ * @param job Job*
+ * @param input_str char[]
+ * @return int
+ ****************************************************************/
+int create_job(Job *job, char input_str[MAX_BUFFER_SIZE])
 {
   int len = get_strlen(input_str);
   int pipeline_index = 0;
@@ -68,16 +72,13 @@ int create_job(Job *job, char input_str[256])
   bool pipeline_done = false;
   char sp_char;
   int i = 0;
-  // printf("%d\n", len);
 
   while (input_str[i] == ' ' && i < MAX_BUFFER_SIZE)
   {
-    printf("i: %d\n", i);
     i++;
   }
   if (input_str[i] == '\0' || input_str[i] == '\n')
   {
-    printf("input_str is null, but thats bad :(\n");
     return -1;
   }
   job->pipeline[pipeline_index].argv[argv_index] = &input_str[0];
@@ -167,4 +168,18 @@ int create_job(Job *job, char input_str[256])
     }
   }
   return 0;
+}
+void write_welcome_message()
+{
+  const char *message =
+      "********************************************\n"
+      "*                                          *\n"
+      "*                 Welcome!                 *\n"
+      "*                                          *\n"
+      "********************************************\n"
+      "*               Created by:                *\n"
+      "*  Amtoj Punia, Henry Nguyen, Evan Wushke  *\n"
+      "********************************************\n";
+
+  write(STDOUT_FILENO, message, get_strlen(message));
 }
