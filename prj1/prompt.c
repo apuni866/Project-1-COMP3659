@@ -65,7 +65,6 @@ int main()
  ****************************************************************/
 int create_job(Job *job, char input_str[MAX_BUFFER_SIZE])
 {
-  int len = get_strlen(input_str);
   int pipeline_index = 0;
   int argv_index = 0;
   bool space_found = false;
