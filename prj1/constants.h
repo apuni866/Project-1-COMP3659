@@ -5,8 +5,8 @@
 #define MAX_LEN 128
 #define MAX_ARGS 32
 #define STD_INPUT_FD 0
-#define PROMPT_SYMBOL ">_> "
-#define PROMPT_SYMBOL_SIZE 4
+#define PROMPT_SYMBOL "\n>_> "
+#define PROMPT_SYMBOL_SIZE 5
 #define EXIT_SUCCESS 0
 #define EXIT_FAIL 1
 #define OUT_REDIRECT_CODE 1

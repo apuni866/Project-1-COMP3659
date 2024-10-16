@@ -8,8 +8,8 @@ TEST_TARGET = test
 all: $(TARGET) $(TEST_TARGET) clean
 
 # Build the main shell executable
-$(TARGET): prompt.o custom_string.o memory.o command.o job.o parse.o
-	$(CC) $(CFLAGS) -o $(TARGET) prompt.o custom_string.o memory.o command.o job.o parse.o
+$(TARGET): prompt.o custom_string.o memory.o command.o job.o parse.o custom_signals.o
+	$(CC) $(CFLAGS) -o $(TARGET) prompt.o custom_string.o memory.o command.o job.o parse.o custom_signals.o
 
 # Build the test executable
 $(TEST_TARGET): test_driver.o custom_string.o memory.o command.o parse.o
@@ -33,6 +33,10 @@ job.o: job.c job.h
 
 parse.o: parse.c parse.h
 	$(CC) $(CFLAGS) -c parse.c
+
+custom_signals.o: custom_signals.c custom_signals.h
+	$(CC) $(CFLAGS) -c custom_signals.c
+
 
 test_driver.o: test_driver.c custom_string.h command.h memory.h
 	$(CC) $(CFLAGS) -c test_driver.c

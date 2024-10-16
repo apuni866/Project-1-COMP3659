@@ -24,7 +24,7 @@ char *get_command()
   // printf("%d", errno);
   if (bytesRead < 0)
   {
-    printf("This should never happen, because just think about it\n");
+    printf("This should never happen.\n");
     free_all();  // Clean up the buffer
     return NULL; // Return NULL in case of error
   }

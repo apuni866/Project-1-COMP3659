@@ -1,19 +1,28 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <signal.h>
+#include <bits/sigaction.h>
+
 
 #include "custom_string.h"
+#include "custom_signals.h"
 #include "constants.h"
 #include "memory.h"
 #include "command.h"
 #include "job.h"
 #include "parse.h"
 
+
 // void add_argument_to_pipeline(Job *job, int pipeline_index, int *argv_index, char *input_str, int pos);
 // void start_new_pipeline_stage(Job *job, int *pipeline_index, int *argv_index, char *input_str, int *pos);
 // void handle_special_char(Job *job, char *input_str, int pos, char *sp_char, bool *pipeline_done);
 // void set_input_output_paths(Job *job, char *input_str, int *pos, char sp_char);
 int create_job(Job *job, char input_str[MAX_BUFFER_SIZE]);
+
+struct sigaction sig;
+
+
 
 int main()
 {
@@ -26,6 +35,11 @@ int main()
           NULL,
           0};
 
+  sig.sa_handler = &handle_sigint;
+  sig.sa_flags = SA_RESTART;
+  sigaction(SIGTSTP, &sig,NULL);
+
+
   reset_command_struct(&command);
 
   while (true)
@@ -34,11 +48,10 @@ int main()
 
     if (input_str == NULL || *input_str == '\0')
       continue;
-    write(STDOUT_FILENO, input_str, MAX_BUFFER_SIZE - 1);
+
     if (create_job(&job, input_str) == -1)
       continue;
 
-    printf("Left create job\n");
     if (string_compare(job.pipeline[0].argv[0], "exit", 4) == 0)
     {
       free_all(); // Free the input string memory before exiting
@@ -67,7 +80,6 @@ int main()
 
 int create_job(Job *job, char input_str[256])
 {
-  int len = get_strlen(input_str);
   int pipeline_index = 0;
   int argv_index = 0;
   bool space_found = false;
