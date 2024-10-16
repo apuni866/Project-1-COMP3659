@@ -51,7 +51,7 @@ char *get_command()
 
   return buffer;
 }
-
+/*
 int run_command(Command *command, int input_fd, int output_fd)
 {
 
@@ -115,7 +115,7 @@ int run_command(Command *command, int input_fd, int output_fd)
 
   return 0;
 }
-
+*/
 void reset_command_struct(Command *command)
 {
   command->argc = 0;

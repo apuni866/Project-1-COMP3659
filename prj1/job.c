@@ -77,7 +77,6 @@ void run_job(Job *job)
     if (job->outfile_path != NULL)
     {
       outfile = open(job->outfile_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-      // printf("outfile: %s: %d\n", job->outfile_path, outfile);
       if (outfile == -1)
       {
         perror("Error opening outfile");
@@ -90,12 +89,9 @@ void run_job(Job *job)
     if (infile != 0)
       dup2(infile, 0);
 
-    // printf("Executing final command: %s\n", job->pipeline[stage].argv[0]);
     path = job->pipeline[stage].argv[0];
     strcpy(curr_dir_path, default_dir_path);
-    // printf("copy is: %s\n", curr_dir_path);
     strncat(curr_dir_path, path, get_strlen(path) + 1);
-    // printf("path for execve(): %s\n", curr_dir_path);
     execve(curr_dir_path, job->pipeline[stage].argv, envp);
     perror("execve failed");
     exit(EXIT_FAILURE);
@@ -108,8 +104,6 @@ void run_job(Job *job)
   }
   if (!job->background)
     waitpid(pid2, &child_status, 0);
-  else
-    printf("hey its a backgroundjob");
 }
 
 void reset_job(Job *job)
