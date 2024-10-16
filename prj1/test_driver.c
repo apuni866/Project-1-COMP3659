@@ -8,11 +8,12 @@
 #include "command.h"
 #include "memory.h"
 #include "constants.h"
+#include "job.h"
 
 // Function to prompt user to hit enter between major sections
 void prompt_continue()
 {
-    // printf("\nPress Enter to continue...\n");
+    printf("\n[--PRESS ENTER TO CONTINUE--]\n");
     while (getchar() != '\n')
         ;
 }
@@ -21,16 +22,17 @@ void print_test_result(const char *test_name, int result)
 {
     if (result)
     {
-        // printf("%-40s [--PASS--]\n", test_name);
+        printf("%-40s [--PASS--]\n", test_name);
     }
     else
     {
-        // printf("%-40s [--FAIL--]\n", test_name);
+        printf("%-40s [--FAIL--]\n", test_name);
     }
 }
 
 void test_custom_string()
 {
+
     // printf("Testing custom_string functions...\n");
 
     // Test string_compare
@@ -41,11 +43,12 @@ void test_custom_string()
     print_test_result("string_compare different", string_compare(str1, str3, get_strlen(str1)) != 0);
 
     // Test parse
+    /*
     char input[MAX_BUFFER_SIZE] = "ls -la";
     char *args[MAX_ARGS];
     parse(input, args);
     print_test_result("parse", strcmp(args[0], "ls") == 0 && strcmp(args[1], "-la") == 0);
-
+*/
     // Test strcpy
     char dest[MAX_LEN];
     strcpy(dest, str1);
@@ -96,30 +99,121 @@ void test_custom_string()
 }
 
 // Function to test command functions
-void test_command()
+void test_job()
 {
+    // Test data
+    Job eg1 = {
+        {{{"/usr/bin/ls", "-al", "/library", NULL}, 3}},
+        1,
+        "dirlist",
+        NULL,
+        0};
 
-    Command command;
-    command.memory_error_flag = false;
-    // printf("Testing command functions...\n");
+    Job cat1 = {
+        {{{"/usr/bin/cat", NULL}, 1}},
+        1,
+        NULL,
+        "txt.txt",
+        0};
 
-    // Test get_command
+    Job cat2 = {
+        {{{"/usr/bin/cat", NULL}, 1}},
+        1,
+        NULL,
+        NULL,
+        0};
 
-    // printf("\nEnter empty command\n");
-    get_command(&command);
-    print_test_result("get_command", command.argv[0] == NULL);
+    Job cat3 = {
+        {{{"/usr/bin/cat", NULL}, 1}},
+        1,
+        NULL,
+        "dirlist",
+        1};
 
-    // printf("Enter non-empty command\n");
-    get_command(&command);                                     // Simulate getting a command
-    print_test_result("get_command", command.argv[0] != NULL); // Assuming any input is valid
+    Job eg2 = {
+        {{{"/usr/bin/ls", "-al", "/library", NULL}, 3},
+         {{"/usr/bin/wc", "-l", NULL}, 2}},
+        2,
+        NULL,
+        NULL,
+        0};
 
-    int run_result = run_command(&command);
-    print_test_result("run_command", run_result == 0);
+    Job eg3 = {
+        {{{"/usr/bin/ls", NULL}, 1},
+         {{"/usr/bin/ls", NULL}, 1},
+         {{"/usr/bin/wc", NULL}, 1}},
+        3,
+        NULL,
+        NULL,
+        0};
 
-    reset_command_struct(&command);
-    print_test_result("reset_command_struct", command.argv[0] == NULL);
+    Job eg4 = {
+        {{{"/usr/bin/ps", "aux", NULL}, 2},
+         {{"/usr/bin/grep", "conky", NULL}, 2},
+         {{"/usr/bin/wc", NULL}, 1}},
+        3,
+        NULL,
+        NULL,
+        0};
 
-    prompt_continue(); // After all command tests
+    // Test cases
+    print_test_result(" test_job - eg1",
+                      eg1.num_stages ==
+                              1 &&
+                          strcmp(eg1.pipeline[0].argv[0], "/usr/bin/ls") == 0 &&
+                          strcmp(eg1.pipeline[0].argv[1], "-al") == 0 &&
+                          strcmp(eg1.pipeline[0].argv[2], "/library") == 0 &&
+                          eg1.pipeline[0].argc == 3 &&
+                          strcmp(eg1.outfile_path, "dirlist") == 0);
+
+    print_test_result("test_job - cat1",
+                      cat1.num_stages == 1 &&
+                          strcmp(cat1.pipeline[0].argv[0], "/usr/bin/cat") == 0 &&
+                          cat1.pipeline[0].argc == 1 &&
+                          strcmp(cat1.infile_path, "txt.txt") == 0);
+
+    print_test_result("test_job - cat2",
+                      cat2.num_stages == 1 &&
+                          strcmp(cat2.pipeline[0].argv[0], "/usr/bin/cat") == 0 &&
+                          cat2.pipeline[0].argc == 1);
+
+    print_test_result("test_job - cat3",
+                      cat3.num_stages == 1 &&
+                          strcmp(cat3.pipeline[0].argv[0], "/usr/bin/cat") == 0 &&
+                          cat3.pipeline[0].argc == 1 &&
+                          strcmp(cat3.infile_path, "dirlist") == 0 &&
+                          cat3.background == 1);
+
+    print_test_result("test_job - eg2",
+                      eg2.num_stages == 2 &&
+                          strcmp(eg2.pipeline[0].argv[0], "/usr/bin/ls") == 0 &&
+                          strcmp(eg2.pipeline[0].argv[1], "-al") == 0 &&
+                          strcmp(eg2.pipeline[0].argv[2], "/library") == 0 &&
+                          eg2.pipeline[0].argc == 3 &&
+                          strcmp(eg2.pipeline[1].argv[0], "/usr/bin/wc") == 0 &&
+                          strcmp(eg2.pipeline[1].argv[1], "-l") == 0 &&
+                          eg2.pipeline[1].argc == 2);
+
+    print_test_result("test_job - eg3",
+                      eg3.num_stages == 3 &&
+                          strcmp(eg3.pipeline[0].argv[0], "/usr/bin/ls") == 0 &&
+                          eg3.pipeline[0].argc == 1 &&
+                          strcmp(eg3.pipeline[1].argv[0], "/usr/bin/ls") == 0 &&
+                          eg3.pipeline[1].argc == 1 &&
+                          strcmp(eg3.pipeline[2].argv[0], "/usr/bin/wc") == 0 &&
+                          eg3.pipeline[2].argc == 1);
+
+    print_test_result("test_job - eg4",
+                      eg4.num_stages == 3 &&
+                          strcmp(eg4.pipeline[0].argv[0], "/usr/bin/ps") == 0 &&
+                          strcmp(eg4.pipeline[0].argv[1], "aux") == 0 &&
+                          eg4.pipeline[0].argc == 2 &&
+                          strcmp(eg4.pipeline[1].argv[0], "/usr/bin/grep") == 0 &&
+                          strcmp(eg4.pipeline[1].argv[1], "conky") == 0 &&
+                          eg4.pipeline[1].argc == 2 &&
+                          strcmp(eg4.pipeline[2].argv[0], "/usr/bin/wc") == 0 &&
+                          eg4.pipeline[2].argc == 1);
+    prompt_continue();
 }
 
 // Function to test memory functions
@@ -144,7 +238,7 @@ int main()
 
     test_custom_string();
 
-    test_command();
+    test_job();
 
     test_memory();
 

@@ -28,15 +28,14 @@ int tokenizer(char *input_buffer, Command *command)
 
     // move ptr along
     while (*input_buffer != ' ' && *input_buffer != '\0')
-      *input_buffer++;
+      //*input_buffer++;
 
-    // repace whitespace with a null
-    if (*input_buffer == ' ')
-    {
-
-      *input_buffer = '\0';
-      *input_buffer++;
-    }
+      // repace whitespace with a null
+      if (*input_buffer == ' ')
+      {
+        *input_buffer = '\0';
+        //*input_buffer++;
+      }
   }
   args[counter] = NULL; // null terminate this for execve(x,y,NULL) as it is a requirement (says in the manual 2 execve)
   return counter;
@@ -44,8 +43,6 @@ int tokenizer(char *input_buffer, Command *command)
 
 int parse(Command *command, Job *job)
 {
-
-  // char **temp = NULL; // for temp array
   int i = 0;
   int j = 0;
   char **tokens = command->tokens;
