@@ -10,6 +10,8 @@
 
 int create_job(Job *job, char input_str[MAX_BUFFER_SIZE]);
 void write_welcome_message();
+bool is_special_char(char c);
+void skip_leading_spaces(const char input_str[MAX_BUFFER_SIZE], int *i);
 
 int main()
 {
@@ -20,7 +22,6 @@ int main()
       NULL,
       NULL,
       0};
-
   reset_command_struct(&command);
 
   write_welcome_message();
@@ -54,6 +55,39 @@ int main()
   }
   return 0;
 }
+/**
+ * @brief Checks if a given character is a special character.
+ *
+ * This function determines whether the input character `c` is a special character.
+ * Special characters are typically non-alphanumeric characters, but the exact
+ * definition may vary depending on the implementation.
+ *
+ * @param c The character to be checked.
+ * @return true if the character is a special character, false otherwise.
+ */
+bool is_special_char(char c)
+{
+  return (c == '|' || c == '<' || c == '>' || c == '&');
+}
+/**
+ * @brief Skips leading spaces in the given input string.
+ *
+ * This function iterates through the input string starting from the beginning
+ * and increments the index pointer until a non-space character is encountered.
+ *
+ * @param input_str The input string from which leading spaces are to be skipped.
+ *                  It is assumed to be null-terminated and its maximum size is
+ *                  defined by MAX_BUFFER_SIZE.
+ * @param i Pointer to an integer that will be updated to the index of the first
+ *          non-space character in the input string.
+ */
+void skip_leading_spaces(const char input_str[MAX_BUFFER_SIZE], int *i)
+{
+  while (input_str[*i] == ' ' && *i < MAX_BUFFER_SIZE)
+  {
+    (*i)++;
+  }
+}
 /*****************************************************************
  * @brief Parses the input string and populates an empty job struct
  *        accordingly.
@@ -71,28 +105,23 @@ int create_job(Job *job, char input_str[MAX_BUFFER_SIZE])
   char sp_char;
   int i = 0;
 
-  while (input_str[i] == ' ' && i < MAX_BUFFER_SIZE)
-  {
-    i++;
-  }
+  skip_leading_spaces(input_str, &i);
   if (input_str[i] == '\0' || input_str[i] == '\n')
   {
     return -1;
   }
+
   job->pipeline[pipeline_index].argv[argv_index] = &input_str[0];
   job->pipeline[pipeline_index].argc = 1;
   argv_index++;
 
   job->num_stages = 1;
+
   for (; i < MAX_BUFFER_SIZE; i++)
   {
     if (!pipeline_done)
     {
-
-      if (space_found && !(input_str[i] == '|' ||
-                           input_str[i] == '<' ||
-                           input_str[i] == '>' ||
-                           input_str[i] == '&'))
+      if (space_found && !is_special_char(input_str[i]))
       {
         space_found = false;
         job->pipeline[pipeline_index].argv[argv_index] = &input_str[i];
@@ -115,9 +144,7 @@ int create_job(Job *job, char input_str[MAX_BUFFER_SIZE])
         job->pipeline[pipeline_index].argc = 1;
         argv_index++;
       }
-      else if (input_str[i] == '<' ||
-               input_str[i] == '>' ||
-               input_str[i] == '&')
+      else if (is_special_char(input_str[i]))
       {
         sp_char = input_str[i];
         input_str[i] = '\0';
@@ -127,7 +154,6 @@ int create_job(Job *job, char input_str[MAX_BUFFER_SIZE])
       }
       else if (input_str[i] == ' ')
       {
-
         input_str[i] = '\0';
         space_found = true;
       }
@@ -167,10 +193,16 @@ int create_job(Job *job, char input_str[MAX_BUFFER_SIZE])
   }
   return 0;
 }
+/**
+ * @brief Writes a welcome message to the standard output.
+ *
+ * This function outputs a predefined welcome message to the console.
+ * It does not take any parameters and does not return any values.
+ */
 void write_welcome_message()
 {
   const char *message =
-      "********************************************\n"
+      "\n********************************************\n"
       "*                                          *\n"
       "*                 Welcome!                 *\n"
       "*                                          *\n"
