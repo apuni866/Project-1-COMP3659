@@ -19,6 +19,4 @@ char *strncat(char *destination, const char *source, size_t src_byte_len);
 int contains_pipe_char(Command *command);
 int contains_redirection_char(Command *command);
 
-// char *strcat(char *destination, const char *source);
-
 #endif

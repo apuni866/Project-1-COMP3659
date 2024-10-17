@@ -25,6 +25,7 @@ void run_job(Job *job);
 void allocate_jobs(Job *job, Command *command);
 void reset_job(Job *job);
 void open_output_file(Job *job, Command *command);
+char *construct_cmd_path(const char *command, const char *default_dir_path);
 
 void print_argv(Command *command, char *message);
 void print_job(Job *job, char *message);

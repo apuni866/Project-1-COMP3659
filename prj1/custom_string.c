@@ -35,8 +35,6 @@ int string_compare(const char *string1, const char *string2, size_t byte_length)
  *  This is a bsaic string copy funtion which copies
  *   a string from the source into the destintation
  *   and returns a pointer to the destination
- *
- *
  ***********/
 char *strcpy(char *destination, const char *source)
 {
@@ -93,7 +91,18 @@ char *strncat(char *destination, const char *source, size_t src_byte_len)
 
   return destination;
 }
-/*Checks if an argument in argv contains the piping character "|"*/
+
+/**
+ * @brief Checks if the given command contains a pipe character ('|').
+ *
+ * This function examines the provided Command structure to determine if it
+ * includes a pipe character, which is typically used to separate commands
+ * in a pipeline.
+ *
+ * @param command A pointer to the Command structure to be checked.
+ * @return An integer indicating the presence of a pipe character.
+ *         Returns 1 if a pipe character is found, 0 otherwise.
+ */
 int contains_pipe_char(Command *command)
 {
   unsigned int i;
@@ -116,7 +125,7 @@ int contains_pipe_char(Command *command)
  * Returns 0 if neither is found
  *****************************************************/
 int contains_redirection_char(Command *command)
-{ // what if we return index instead..?
+{
   for (unsigned int i = 0; i < command->argc; i++)
   {
 
@@ -126,5 +135,5 @@ int contains_redirection_char(Command *command)
     if (string_compare(command->argv[i], "<", get_strlen(command->argv[i])) == 0)
       return IN_REDIRECT_CODE;
   }
-  return 0; // No redirection found
+  return 0;
 }

@@ -36,4 +36,4 @@ test_driver.o: test_driver.c custom_string.h command.h memory.h job.h
 
 # Clean up object files
 clean:
-	rm -f *.o
+	rm -f *.o *.txt

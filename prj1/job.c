@@ -56,13 +56,8 @@ void run_job(Job *job)
       dup2(pipefd[WRITE_END], 1);
       close(pipefd[WRITE_END]);
 
-      path = job->pipeline[stage].argv[0];
-      strcpy(curr_dir_path, default_dir_path);
-      // printf("copy is: %s\n", curr_dir_path);
-      strncat(curr_dir_path, path, get_strlen(path) + 1);
-      // printf("path for execve(): %s\n", job->pipeline[stage].argv[0]);
-      // printf("Executing command: %s\n", curr_dir_path);
-      execve(curr_dir_path, job->pipeline[stage].argv, envp);
+      path = construct_cmd_path(job->pipeline[stage].argv[0], default_dir_path);
+      execve(path, job->pipeline[stage].argv, envp);
       perror("execve in for loop failed");
       exit(EXIT_FAILURE);
     }
@@ -89,10 +84,8 @@ void run_job(Job *job)
     if (infile != 0)
       dup2(infile, 0);
 
-    path = job->pipeline[stage].argv[0];
-    strcpy(curr_dir_path, default_dir_path);
-    strncat(curr_dir_path, path, get_strlen(path) + 1);
-    execve(curr_dir_path, job->pipeline[stage].argv, envp);
+    path = construct_cmd_path(job->pipeline[stage].argv[0], default_dir_path);
+    execve(path, job->pipeline[stage].argv, envp);
     perror("execve failed");
     exit(EXIT_FAILURE);
   }
@@ -130,7 +123,18 @@ void open_output_file(Job *job, Command *command)
     return;
   }
 }
-
+char *construct_cmd_path(const char *command, const char *default_dir_path)
+{
+  char *curr_dir_path = alloc(MAX_BUFFER_SIZE);
+  if (curr_dir_path == NULL)
+  {
+    perror("malloc failed");
+    exit(EXIT_FAILURE);
+  }
+  strcpy(curr_dir_path, default_dir_path);
+  strncat(curr_dir_path, command, get_strlen(command) + 1);
+  return curr_dir_path;
+}
 void print_argv(Command *command, char *message)
 {
 #if 0
