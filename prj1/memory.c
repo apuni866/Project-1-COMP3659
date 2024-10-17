@@ -8,10 +8,16 @@
 char heap[HEAP_SIZE];
 char *freep = heap;
 
-/******
+/**
+ * @brief Allocates a block of memory of the specified size.
  *
+ * This function allocates a block of memory of the given size and returns
+ * a pointer to the beginning of the block. The memory allocated is
+ * uninitialized.
  *
- *****/
+ * @param size The size of the memory block to allocate, in bytes.
+ * @return A pointer to the allocated memory block, or NULL if the allocation fails.
+ */
 char *alloc(unsigned int size)
 {
 
@@ -30,9 +36,7 @@ char *alloc(unsigned int size)
 
 void free_all()
 {
-  ////printf("Location of freep before free_all() is: %p\n",(void*)freep);
   freep = heap;
-  ////printf("Location of freep AFTER is: %p\n",(void*)freep);
 }
 char *resize(char *old_buffer)
 {
@@ -41,21 +45,15 @@ char *resize(char *old_buffer)
   int new_size = old_size * 2;
   char *new_block = alloc(new_size);
 
-  // printf("old buf size --> %d\n",old_size);
-  // printf("new buf size --> %d\n",new_size);
-
-  // NO more memory left so return NULL
   if (new_block == NULL)
   {
 
     return NULL;
   }
 
-  // Move elements to the new block
   for (i = 0; i < old_size; i++)
     new_block[i] = old_buffer[i];
 
   new_block[i] = '\0';
-
   return new_block;
 }

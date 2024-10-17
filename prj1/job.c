@@ -135,39 +135,6 @@ char *construct_cmd_path(const char *command, const char *default_dir_path)
   strncat(curr_dir_path, command, get_strlen(command) + 1);
   return curr_dir_path;
 }
-void print_argv(Command *command, char *message)
-{
-#if 0
-  int temp_out_fd = command->output_fd;
-  command->output_fd = STDOUT_FILENO;
-  printf("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ARGUMENT VECTOR DEBUG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-  printf("Location:           %s\n", message);
-
-  printf("Command Arguments:  (argc = %d):\n", command->argc);
-  printf("Command input fd:   %d\n", command->input_fd);
-  printf("Command output fd:  %d\n", temp_out_fd);
-  for (unsigned int i = 0; i < command->argc; i++)
-  {
-    if (command->argv[i] != NULL)
-    {
-      printf("argv[%d]:            %s\n", i, command->argv[i]);
-    }
-    else
-    {
-      printf("argv[%d]:           NULL\n", i);
-    }
-  }
-
-  // Print the last NULL pointer in argv
-  if (command->argv[command->argc] == NULL)
-  {
-    printf("argv[%d]:            NULL\n", command->argc);
-  }
-  printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ END DEBUG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
-  // resets the output fd to whatever it was before
-  command->output_fd = temp_out_fd;
-#endif
-}
 void print_job(Job *job, char *message)
 {
 #if 0
@@ -205,31 +172,4 @@ void print_job(Job *job, char *message)
 
   printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ END DEBUG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
 #endif
-}
-
-void initialize_job(Job *job)
-{
-  /*
-  job =
-      {
-          {{{"/usr/bin/ls", "-al", "/library", NULL}, 3}},
-          1,
-          NULL,
-          NULL,
-          0};
-          */
-  reset_command_struct(&(job->pipeline[0]));
-}
-void printArray(char *arr[], size_t size)
-{
-  printf("Array elements: [");
-  for (int i = 0; i < size; i++)
-  {
-    printf("%s", arr[i]);
-    if (i < size - 1)
-    {
-      printf(", "); // Separate elements with a comma and space
-    }
-  }
-  printf("]\n"); // Close the array format and add a newline
 }

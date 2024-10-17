@@ -3,13 +3,6 @@
 
 #include "command.h"
 
-/* ls -al /library | wc -l > output.txt &
- */
-// example of a job for the sake of understanding
-// it has 2 commands
-// first command store in job.pipline[0]
-// seconds commands store in job.pipeline[1]
-//
 #define MAX_PIPELINE_LEN 10
 
 typedef struct
@@ -27,8 +20,6 @@ void reset_job(Job *job);
 void open_output_file(Job *job, Command *command);
 char *construct_cmd_path(const char *command, const char *default_dir_path);
 
-void print_argv(Command *command, char *message);
 void print_job(Job *job, char *message);
-void printArray(char *arr[], size_t size);
 
 #endif
