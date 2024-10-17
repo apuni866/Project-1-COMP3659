@@ -10,7 +10,6 @@
 #include "command.h"
 #include "memory.h"
 
-#include "parse.h"
 #include <string.h>
 /*****************************************************************
  * @brief Writes the prompt sysmbol then gets an individual command
