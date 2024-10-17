@@ -2,6 +2,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <sys/wait.h>
+#include <sys/types.h>
 
 #include <stdio.h> //remove this later
 
@@ -10,6 +11,8 @@
 #include "command.h"
 #include "memory.h"
 #include "job.h"
+
+int foreground_pid = 0;
 
 void run_job(Job *job)
 {
@@ -46,6 +49,7 @@ void run_job(Job *job)
 
     if (pid == 0)
     {
+
       if (infile != 0)
       {
         dup2(infile, 0);
@@ -58,26 +62,26 @@ void run_job(Job *job)
 
       path = job->pipeline[stage].argv[0];
       strcpy(curr_dir_path, default_dir_path);
-      // printf("copy is: %s\n", curr_dir_path);
       strncat(curr_dir_path, path, get_strlen(path) + 1);
-      // printf("path for execve(): %s\n", job->pipeline[stage].argv[0]);
-      // printf("Executing command: %s\n", curr_dir_path);
       execve(curr_dir_path, job->pipeline[stage].argv, envp);
       perror("execve in for loop failed");
       exit(EXIT_FAILURE);
     }
-
+ 
     close(pipefd[WRITE_END]);
     infile = pipefd[READ_END];
   }
 
   pid2 = fork();
+
   if (pid2 == 0)
   {
+     //setpgid(0,0);
+    
     if (job->outfile_path != NULL)
     {
-      outfile = open(job->outfile_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-      // printf("outfile: %s: %d\n", job->outfile_path, outfile);
+      outfile = open(job->outfile_path, O_WRONLY | O_CREAT | O_TRUNC, FILE_FLAG);
+
       if (outfile == -1)
       {
         perror("Error opening outfile");
@@ -100,6 +104,15 @@ void run_job(Job *job)
     perror("execve failed");
     exit(EXIT_FAILURE);
   }
+  else{
+
+      // foreground_pid = pid2;
+      // tcsetpgrp(STDIN_FILENO,pid2);
+      // waitpid(pid2, &child_status, WUNTRACED);
+      // tcsetpgrp(STDIN_FILENO,getpid());
+      // foreground_pid = -1;
+    }
+    
 
   if (job->num_stages > 1)
   {

@@ -20,7 +20,7 @@
 #define FILE_FLAG 0644
 
 #define MAX_LOG_SIZE 1000
-#define UP_ARROW "^[[A"
+#define UP_ARROW "\033[A"
 #define UP_ARROW_SIZE 4
 
 #define INIT_VALUE -1

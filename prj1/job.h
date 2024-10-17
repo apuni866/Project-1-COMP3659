@@ -30,4 +30,5 @@ void print_argv(Command *command, char *message);
 void print_job(Job *job, char *message);
 void printArray(char *arr[], size_t size);
 
+
 #endif

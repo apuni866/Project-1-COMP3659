@@ -26,9 +26,15 @@ int create_job(Job *job, char input_str[MAX_BUFFER_SIZE]);
 void add_to_history(const char *input_str);
 void log_message(const char *message);
 
+void print_command_history(char command_history[], int history_count);
+
+
 struct sigaction sig;
-char *command_history[MAX_LOG_SIZE +1];
+char command_history[MAX_LOG_SIZE + 1];
+char temp_str[MAX_BUFFER_SIZE];
+
 int history_count = 0;
+int increment = 0;
 
 
 
@@ -47,9 +53,16 @@ int main()
   sig.sa_handler = &handle_sigint;
   sig.sa_flags = 0;
   sigaction(SIGINT, &sig ,NULL);
-  
-  //add sigaction for quit
 
+  sig.sa_handler = &handle_sigquit;
+  sigaction(SIGQUIT,&sig,NULL);
+ 
+  sig.sa_handler = &handle_sigtstp;
+  sig.sa_flags = 0;//0x10000000; //SA_RESTART
+  sigaction(SIGTSTP, &sig, NULL);
+
+  //add sigaction for quit
+  
 
   reset_command_struct(&command);
 
@@ -60,7 +73,21 @@ int main()
     if (input_str == NULL || *input_str == '\0')
       continue;
 
-    //add_to_history(input_str);
+
+    /*
+    add_to_history(input_str);
+    print_command_history(command_history,history_count);
+
+    if(string_compare(UP_ARROW, input_str, UP_ARROW_SIZE) == 0)
+    {
+      //printf("Hey up arrow was pressed\n");
+      increment++;
+      strcpy(temp_str , &command_history[history_count - increment]);
+      write(STDOUT_FILENO, temp_str, get_strlen(temp_str) );
+      write(STDOUT_FILENO, "\n", 2);
+      continue;
+    }
+    */
 
     if (create_job(&job, input_str) == -1)
       continue;
@@ -68,6 +95,7 @@ int main()
     if (string_compare(job.pipeline[0].argv[0], "exit", 4) == 0)
     {
       free_all(); // Free the input string memory before exiting
+      print_command_history(command_history,history_count);
       break;
     }
 
@@ -79,22 +107,12 @@ int main()
       continue;
     }
 
-    if (string_compare(job.pipeline[0].argv[0], UP_ARROW, UP_ARROW_SIZE) == 0)
-    {
-      char *temp = command_history[history_count-1];
-      write(STDOUT_FILENO, temp, get_strlen(temp) );
-      continue;
-
-    }
 
     run_job(&job);
-
     free_all(); // Free input string after the job is run
-    print_job(&job, "In main, after run_job()");
     reset_job(&job);
-    print_job(&job, "In main, after reset_job()");
+  
 
-    // reset_command_struct(&command);
   }
 
   return 0;
@@ -209,139 +227,27 @@ int create_job(Job *job, char input_str[256])
   return 0;
 }
 
+/* didnt finsish these*/
 //call from handler
 void log_message(const char *message)
 {
-
 }
 void add_to_history(const char *input_str)
 {
-  printf("insode of add to hostiyr\n");
-  if (history_count < MAX_LOG_SIZE )
-    strncat(command_history[history_count], input_str, get_strlen(input_str));
-    
+  if (history_count < MAX_LOG_SIZE)
+  {
+    strncat(&command_history[history_count], input_str, get_strlen(input_str));
+  } 
+    // if (history_count < 100)
+    //   strncat(&command_history[history_count+1] , " ", 1);
+
     history_count++;
-
-  printf("leaving add to hostiyr\n");
-
 }
-
-#if 0
-void add_argument_to_pipeline(Job *job, int pipeline_index, int *argv_index, char *input_str, int pos)
-{
-  job->pipeline[pipeline_index].argv[*argv_index] = &input_str[pos];
-  job->pipeline[pipeline_index].argc++;
-  (*argv_index)++;
-}
-
-void start_new_pipeline_stage(Job *job, int *pipeline_index, int *argv_index, char *input_str, int *pos)
-{
-  input_str[*pos] = '\0';
-  (*pipeline_index)++;
-  *argv_index = 0;
-  job->num_stages++;
-
-  // Skip over spaces
-  do
-  {
-    (*pos)++;
-  } while (input_str[*pos] == ' ');
-
-  job->pipeline[*pipeline_index].argv[*argv_index] = &input_str[*pos];
-  job->pipeline[*pipeline_index].argc = 1;
-  (*argv_index)++;
-}
-
-void handle_special_char(Job *job, char *input_str, int pos, char *sp_char, bool *pipeline_done)
-{
-  *sp_char = input_str[pos];
-  input_str[pos] = '\0';
-  *pipeline_done = true;
-  job->pipeline[job->num_stages - 1].argv[job->pipeline[job->num_stages - 1].argc] = NULL; // Terminate current pipeline stage
-}
-
-void set_input_output_paths(Job *job, char *input_str, int *pos, char sp_char)
-{
-  if (sp_char == IO_IN || input_str[*pos] == IO_IN)
-  {
-    for (; input_str[*pos] == ' ' || input_str[*pos] == IO_IN; (*pos)++)
-    {
-      input_str[*pos] = '\0';
+void print_command_history(char command_history[], int history_count) {
+    for (int i = 0; i < history_count; i++) {
+        
+        printf("%s\n",&command_history[history_count]);
+        //write(STDOUT_FILENO, command_history[i], strlen(command_history[i]));
+        //write(STDOUT_FILENO, "\n", 1);  // Print a newline after each command
     }
-    job->infile_path = &input_str[*pos];
-  }
-  else if (sp_char == IO_OUT || input_str[*pos] == IO_OUT)
-  {
-    for (; input_str[*pos] == ' ' || input_str[*pos] == IO_OUT; (*pos)++)
-    {
-      input_str[*pos] = '\0';
-    }
-    job->outfile_path = &input_str[*pos];
-  }
-  else if (sp_char == '&')
-  {
-    input_str[*pos] = '\0';
-    job->background = true;
-  }
 }
-void create_job(Job *job, char input_str[MAX_BUFFER_SIZE])
-{
-  int pipeline_index = 0;
-  int argv_index = 0;
-  bool space_found = false;
-  bool pipeline_done = false;
-  char sp_char;
-
-  job->pipeline[pipeline_index].argv[argv_index] = &input_str[0];
-  // printf("This is the string insdie of the job->pipe: %s\n", job->pipeline[pipeline_index].argv[argv_index]);
-
-  job->pipeline[pipeline_index].argc = 1;
-  argv_index++;
-
-  job->num_stages = 1;
-
-  // -1 ??
-  for (int i = 0; i < MAX_BUFFER_SIZE; i++)
-  {
-    if (!pipeline_done)
-    {
-      if (space_found && !(input_str[i] == '|' || input_str[i] == '<' || input_str[i] == '>' || input_str[i] == '&'))
-      {
-        space_found = false;
-        add_argument_to_pipeline(job, pipeline_index, &argv_index, input_str, i);
-      }
-      if (input_str[i] == '|')
-      {
-        space_found = false;
-        start_new_pipeline_stage(job, &pipeline_index, &argv_index, input_str, &i);
-      }
-      else if (input_str[i] == '<' || input_str[i] == '>' || input_str[i] == '&')
-      {
-        handle_special_char(job, input_str, i, &sp_char, &pipeline_done);
-      }
-      else if (input_str[i] == ' ')
-      {
-        input_str[i] = '\0';
-        space_found = true;
-      }
-      else if (input_str[i] == '\n')
-      {
-        job->pipeline[pipeline_index].argv[argv_index] = NULL;
-        space_found = false;
-        input_str[i] = '\0';
-        break;
-      }
-      // else if (input_str[i] == '\0')
-      //   printf("INside of else if input_str == null termionator \n");
-    }
-    else
-    {
-      set_input_output_paths(job, input_str, &i, sp_char);
-      if (input_str[i] == '\n' || input_str[i] == ' ')
-      {
-        input_str[i] = '\0';
-      }
-    }
-  }
-}
-#endif
