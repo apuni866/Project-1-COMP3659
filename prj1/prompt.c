@@ -1,8 +1,18 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <signal.h>
+
+
+/********************************** 
+We know why this should not be included but for some reason signal.h was not incluing the 
+sigaction struct for signal handling and compiler kept giving incomplete def'n errors 
+Reasons to not include it: Portability and Safelty */
+#include <bits/sigaction.h>    
+/*******************************************/
 
 #include "custom_string.h"
+#include "custom_signals.h"
 #include "constants.h"
 #include "memory.h"
 #include "command.h"
@@ -13,6 +23,8 @@ void write_welcome_message();
 bool is_special_char(char c);
 void skip_leading_spaces(const char input_str[MAX_BUFFER_SIZE], int *i);
 
+struct sigaction sig;
+
 int main()
 {
   Command command;
@@ -22,6 +34,19 @@ int main()
       NULL,
       NULL,
       0};
+  
+  sig.sa_handler = &handle_sigint;
+  sig.sa_flags = 0;
+  sigaction(SIGINT, &sig ,NULL);
+
+  sig.sa_handler = &handle_sigquit;
+  sigaction(SIGQUIT,&sig,NULL);
+ 
+  sig.sa_handler = &handle_sigtstp;
+  sig.sa_flags = 0;//0x10000000; //SA_RESTART
+  sigaction(SIGTSTP, &sig, NULL);
+  
+
   reset_command_struct(&command);
 
   write_welcome_message();
