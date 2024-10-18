@@ -109,7 +109,7 @@ int create_job(Job *job, char input_str[MAX_BUFFER_SIZE])
   if (input_str[i] == '\0' || input_str[i] == '\n')
     return -1;
 
-  job->pipeline[pipeline_index].argv[argv_index] = &input_str[0];
+  job->pipeline[pipeline_index].argv[argv_index] = &input_str[i];
   job->pipeline[pipeline_index].argc = 1;
   argv_index++;
 
@@ -121,10 +121,13 @@ int create_job(Job *job, char input_str[MAX_BUFFER_SIZE])
     {
       if (space_found && !is_special_char(input_str[i]))
       {
-        space_found = false;
-        job->pipeline[pipeline_index].argv[argv_index] = &input_str[i];
-        job->pipeline[pipeline_index].argc++;
-        argv_index++;
+        if (input_str[i] != ' ' && input_str[i] != '\n' && input_str[i] != '\0')
+        {
+          space_found = false;
+          job->pipeline[pipeline_index].argv[argv_index] = &input_str[i];
+          job->pipeline[pipeline_index].argc++;
+          argv_index++;
+        }
       }
       if (input_str[i] == '|')
       {
