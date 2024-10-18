@@ -1,9 +1,6 @@
-#include <stddef.h>
 #include "memory.h"
 #include "constants.h"
 #include "custom_string.h"
-
-#include <stdio.h>
 
 char heap[HEAP_SIZE];
 char *freep = heap;

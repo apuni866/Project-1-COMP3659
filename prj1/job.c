@@ -1,6 +1,5 @@
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdlib.h>
 #include <sys/wait.h>
 
 #include "custom_string.h"
@@ -30,7 +29,7 @@ void run_job(Job *job)
     infile = open(job->infile_path, O_RDONLY);
     if (infile == -1)
     {
-      perror("Error opening infile");
+      write(STDERR_FILENO, "Error opening infile\n", 22);
       return;
     }
   }
@@ -55,7 +54,7 @@ void run_job(Job *job)
 
       path = construct_cmd_path(job->pipeline[stage].argv[0], default_dir_path);
       execve(path, job->pipeline[stage].argv, envp);
-      perror("execve in for loop failed");
+      write(STDERR_FILENO, "Error executing command\n", 25);
       exit(EXIT_FAILURE);
     }
 
@@ -71,7 +70,7 @@ void run_job(Job *job)
       outfile = open(job->outfile_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
       if (outfile == -1)
       {
-        perror("Error opening outfile");
+        write(STDERR_FILENO, "Error opening outfile\n", 23);
         return;
       }
       dup2(outfile, 1);
@@ -83,7 +82,7 @@ void run_job(Job *job)
 
     path = construct_cmd_path(job->pipeline[stage].argv[0], default_dir_path);
     execve(path, job->pipeline[stage].argv, envp);
-    perror("execve failed");
+    write(STDERR_FILENO, "Error executing command\n", 25);
     exit(EXIT_FAILURE);
   }
 
@@ -116,7 +115,7 @@ void open_output_file(Job *job, Command *command)
   command->output_fd = open(job->outfile_path, O_WRONLY | O_CREAT | O_TRUNC, FILE_FLAG);
   if (command->output_fd == -1)
   {
-    perror("Something went wrong with opening the specified file.\n");
+    write(STDERR_FILENO, "Error opening outfile\n", 23);
     return;
   }
 }
@@ -125,7 +124,7 @@ char *construct_cmd_path(const char *command, const char *default_dir_path)
   char *curr_dir_path = alloc(MAX_BUFFER_SIZE);
   if (curr_dir_path == NULL)
   {
-    perror("malloc failed");
+    write(STDERR_FILENO, "Error allocating memory\n", 25);
     exit(EXIT_FAILURE);
   }
   strcpy(curr_dir_path, default_dir_path);

@@ -1,14 +1,12 @@
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdio.h>
 #include <signal.h>
 
-
-/********************************** 
-We know why this should not be included but for some reason signal.h was not incluing the 
-sigaction struct for signal handling and compiler kept giving incomplete def'n errors 
+/**********************************
+We know why this should not be included but for some reason signal.h was not incluing the
+sigaction struct for signal handling and compiler kept giving incomplete def'n errors
 Reasons to not include it: Portability and Safelty */
-#include <bits/sigaction.h>    
+#include <bits/sigaction.h>
 /*******************************************/
 
 #include "custom_string.h"
@@ -34,18 +32,17 @@ int main()
       NULL,
       NULL,
       0};
-  
+
   sig.sa_handler = &handle_sigint;
   sig.sa_flags = 0;
-  sigaction(SIGINT, &sig ,NULL);
+  sigaction(SIGINT, &sig, NULL);
 
   sig.sa_handler = &handle_sigquit;
-  sigaction(SIGQUIT,&sig,NULL);
- 
+  sigaction(SIGQUIT, &sig, NULL);
+
   sig.sa_handler = &handle_sigtstp;
-  sig.sa_flags = 0;//0x10000000; //SA_RESTART
+  sig.sa_flags = 0; // 0x10000000; //SA_RESTART
   sigaction(SIGTSTP, &sig, NULL);
-  
 
   reset_command_struct(&command);
 

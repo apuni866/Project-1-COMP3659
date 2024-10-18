@@ -6,8 +6,7 @@
 #include "command.h"
 #include "job.h"
 
-// Function prototypes
 int create_job(Job *job, char input_str[MAX_BUFFER_SIZE]);
 void write_welcome_message();
 
-#endif // PROMPT_H
+#endif

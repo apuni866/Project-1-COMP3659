@@ -1,16 +1,12 @@
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <sys/wait.h>
-#include <errno.h>
 
 #include "custom_string.h"
 #include "constants.h"
 #include "command.h"
 #include "memory.h"
 
-#include <string.h>
 /*****************************************************************
  * @brief Writes the prompt sysmbol then gets an individual command
  * from the user, returns the command as a string
