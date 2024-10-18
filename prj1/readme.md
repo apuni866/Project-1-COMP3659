@@ -1,10 +1,5 @@
 # Project 1 - COMP3659
 
-## Table of Contents
-- [Introduction](#introduction)
-- [Features](#features)
-- [Contact](#contact)
-
 ## Introduction
 Welcome to Project 1 for COMP3659. This project aims to blow bash out of the water with its outstanding 
 and revolutionary completness.
@@ -19,8 +14,19 @@ and revolutionary completness.
 - implements some additional enhancements, up to and including some
   basic signal handling
 
-## Known Bugs and limitations
+## Known Bugs and Limitations
+If the user enters I/O redirection before a pipe, the shell will ignore the rest of the pipeline.
+This is due to the parsing algorithm, `mysh` reads the string differently. All I/O redirection still 
+has the desired effect, but commands must be formatted differently. For example:
 
+#### bash command 
+```
+cat < input.txt | grep "pattern" | sort > output.txt
+``` 
+#### equivalent command in mysh 
+```
+cat | grep "pattern" | sort < input.txt > output.txt
+``` 
 ## Developers
 - Amtoj Punia
 - Henry Nguyen
