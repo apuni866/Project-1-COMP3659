@@ -3,6 +3,7 @@
         "job.h": "c",
         "command.h": "c",
         "parse.h": "c",
-        "constants.h": "c"
+        "constants.h": "c",
+        "signal.h": "c"
     }
 }
