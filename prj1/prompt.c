@@ -107,9 +107,7 @@ int create_job(Job *job, char input_str[MAX_BUFFER_SIZE])
 
   skip_leading_spaces(input_str, &i);
   if (input_str[i] == '\0' || input_str[i] == '\n')
-  {
     return -1;
-  }
 
   job->pipeline[pipeline_index].argv[argv_index] = &input_str[0];
   job->pipeline[pipeline_index].argc = 1;

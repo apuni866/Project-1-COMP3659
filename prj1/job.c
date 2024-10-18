@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 
-#include <stdio.h> //remove this later
-
 #include "custom_string.h"
 #include "constants.h"
 #include "command.h"
@@ -22,7 +20,7 @@ void run_job(Job *job)
   int stage = 0;
 
   char default_dir_path[MAX_BUFFER_SIZE] = "/bin/";
-  char curr_dir_path[MAX_BUFFER_SIZE] = "/bin/"; // current directory path.
+  char curr_dir_path[MAX_BUFFER_SIZE] = "/bin/";
   char *path = job->pipeline[stage].argv[0];
   strncat(curr_dir_path, path, get_strlen(path) + 1);
   char *const envp[] = {NULL};
@@ -30,7 +28,6 @@ void run_job(Job *job)
   if (job->infile_path != NULL)
   {
     infile = open(job->infile_path, O_RDONLY);
-    // printf("infile: %s: %d\n", job->infile_path, infile);
     if (infile == -1)
     {
       perror("Error opening infile");
@@ -97,6 +94,8 @@ void run_job(Job *job)
   }
   if (!job->background)
     waitpid(pid2, &child_status, 0);
+  else
+    write(STDOUT_FILENO, "Background process started\n", 28);
 }
 
 void reset_job(Job *job)
@@ -105,13 +104,11 @@ void reset_job(Job *job)
   job->infile_path = NULL;
   job->outfile_path = NULL;
   job->background = false;
-  job->num_stages = 1; // Reset num_stages to its initial value
+  job->num_stages = 1;
   int i;
 
   for (i = 0; i < job->num_stages; i++)
-  {
     reset_command_struct(&job->pipeline[i]);
-  }
 }
 
 void open_output_file(Job *job, Command *command)
@@ -135,6 +132,9 @@ char *construct_cmd_path(const char *command, const char *default_dir_path)
   strncat(curr_dir_path, command, get_strlen(command) + 1);
   return curr_dir_path;
 }
+/*******************************************************
+ * @brief Prints the job structure for debugging purposes.
+ */
 void print_job(Job *job, char *message)
 {
 #if 0
