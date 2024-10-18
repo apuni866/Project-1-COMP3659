@@ -1,23 +1,23 @@
 # Variables
 CC = gcc
 CFLAGS = -Wall -g
-TARGET = prompt
+TARGET = mysh
 TEST_TARGET = test
 
 # Default target
 all: $(TARGET) $(TEST_TARGET) clean
 
 # Build the main shell executable
-$(TARGET): prompt.o custom_string.o memory.o command.o job.o custom_signals.o
-	$(CC) $(CFLAGS) -o $(TARGET) prompt.o custom_string.o memory.o command.o job.o custom_signals.o
+$(TARGET): mysh.o custom_string.o memory.o command.o job.o custom_signals.o
+	$(CC) $(CFLAGS) -o $(TARGET) mysh.o custom_string.o memory.o command.o job.o custom_signals.o
 
 # Build the test executable
 $(TEST_TARGET): test_driver.o custom_string.o memory.o command.o job.o custom_signals.o
 	$(CC) $(CFLAGS) -o $(TEST_TARGET) test_driver.o custom_string.o memory.o command.o job.o custom_signals.o
 
 # Object file rules
-prompt.o: prompt.c 
-	$(CC) $(CFLAGS) -c prompt.c
+mysh.o: mysh.c 
+	$(CC) $(CFLAGS) -c mysh.c
 
 custom_string.o: custom_string.c custom_string.h
 	$(CC) $(CFLAGS) -c custom_string.c
